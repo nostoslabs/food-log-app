@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Download, Save, Loader2 } from 'lucide-react';
 import { formatDate } from '../utils';
 import { useFoodLog } from '../hooks/useFoodLog';
@@ -47,94 +48,107 @@ const FoodLogPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Loader2 className="w-6 h-6 animate-spin" />
-          <span>Loading food log...</span>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="w-6 h-6 animate-spin text-brand-orange" />
+          <span className="text-lg font-medium">Loading your food log...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-primary-600 text-white p-4 shadow-lg">
-        <div className="flex items-center justify-between mb-2">
-          <button 
-            onClick={() => changeDate(-1)}
-            className="p-2 hover:bg-primary-700 rounded-lg transition-colors"
-            aria-label="Previous day"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          
-          <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5" />
-            <h1 className="text-lg font-semibold">Food Log</h1>
-          </div>
-          
-          <button 
-            onClick={() => changeDate(1)}
-            className="p-2 hover:bg-primary-700 rounded-lg transition-colors"
-            aria-label="Next day"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        </div>
-        
-        <div className="text-center mb-3">
-          <p className="text-primary-100 text-sm">Your diet may be the key to better health</p>
-          <p className="text-white font-medium">{formatDate(currentDate)}</p>
-          {user && (
-            <p className="text-primary-200 text-xs">
-              Signed in as {user.displayName || user.email}
-            </p>
-          )}
-        </div>
-
-        <div className="flex justify-center gap-2">
-          {user && (
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-primary-700 hover:bg-primary-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50"
+      <motion.div 
+        className="glass-card mx-6 mt-6 mb-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="p-8">
+          <div className="flex items-center justify-between mb-8">
+            <motion.button 
+              onClick={() => changeDate(-1)}
+              className="btn-glass p-4 hover:scale-110"
+              aria-label="Previous day"
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {saving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              {saving ? 'Saving...' : 'Save'}
-            </button>
-          )}
-          
-          <button
-            onClick={handleExport}
-            className="bg-primary-700 hover:bg-primary-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            Export for Doctor
-          </button>
+              <ChevronLeft className="w-6 h-6" />
+            </motion.button>
+            
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">Food Log</h1>
+              </div>
+              <p className="text-slate text-lg font-semibold mb-3">Your diet may be the key to better health</p>
+              <p className="text-2xl font-bold bg-gradient-to-r from-amber to-ruby bg-clip-text text-transparent">{formatDate(currentDate)}</p>
+            </div>
+            
+            <motion.button 
+              onClick={() => changeDate(1)}
+              className="btn-glass p-4 hover:scale-110"
+              aria-label="Next day"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </motion.button>
+          </div>
+
+          <div className="flex justify-center gap-4">
+            {user && (
+              <motion.button
+                onClick={handleSave}
+                disabled={saving}
+                className="btn-glass disabled:opacity-50"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {saving ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Save className="w-5 h-5" />
+                )}
+                {saving ? 'Saving...' : 'Save Changes'}
+              </motion.button>
+            )}
+            
+            <motion.button
+              onClick={handleExport}
+              className="btn-primary text-lg px-8 py-4"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Download className="w-5 h-5" />
+              Export for Doctor
+            </motion.button>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Error Message */}
       {error && (
-        <div className="mx-4 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex justify-between items-center">
-            <p className="text-red-700 text-sm">{error}</p>
-            <button
-              onClick={clearError}
-              className="text-red-400 hover:text-red-600"
-            >
-              ×
-            </button>
+        <div className="max-w-7xl mx-auto px-6 pt-4">
+          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg animate-slide-up">
+            <div className="flex justify-between items-center">
+              <p className="text-destructive text-sm font-medium">{error}</p>
+              <button
+                onClick={clearError}
+                className="text-destructive/60 hover:text-destructive transition-colors"
+              >
+                ×
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="p-4 pb-6 max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto px-4 py-4 space-y-4">
         {/* Meals */}
         <MealSection 
           mealName="breakfast"
