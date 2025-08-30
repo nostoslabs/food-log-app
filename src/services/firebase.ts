@@ -13,13 +13,43 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Debug Firebase config
+console.log('Firebase config loaded:', {
+  hasApiKey: !!firebaseConfig.apiKey,
+  hasAuthDomain: !!firebaseConfig.authDomain,
+  hasProjectId: !!firebaseConfig.projectId,
+  projectId: firebaseConfig.projectId
+});
 
-// Initialize Firebase Authentication and get a reference to the service
-export const auth = getAuth(app);
+// Check if Firebase is configured
+export const isFirebaseConfigured = !!
+  (firebaseConfig.apiKey && 
+   firebaseConfig.authDomain && 
+   firebaseConfig.projectId);
 
-// Initialize Cloud Firestore and get a reference to the service
-export const db = getFirestore(app);
+let app: any;
+let auth: any;
+let db: any;
 
+try {
+  if (isFirebaseConfigured) {
+    console.log('Initializing Firebase...');
+    // Initialize Firebase
+    app = initializeApp(firebaseConfig);
+    
+    // Initialize Firebase Authentication and get a reference to the service
+    auth = getAuth(app);
+    
+    // Initialize Cloud Firestore and get a reference to the service
+    db = getFirestore(app);
+    
+    console.log('Firebase initialized successfully');
+  } else {
+    console.warn('Firebase not configured - missing environment variables');
+  }
+} catch (error) {
+  console.error('Firebase initialization failed:', error);
+}
+
+export { auth, db };
 export default app;

@@ -16,11 +16,15 @@ const AuthContext = createContext<{
 
 // Auth provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
+  console.log('AuthProvider initializing');
+  
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     loading: true,
     error: null
   });
+  
+  console.log('AuthProvider state:', authState);
 
   // Clear error
   const clearError = () => {
