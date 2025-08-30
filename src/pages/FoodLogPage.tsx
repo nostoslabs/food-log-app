@@ -83,7 +83,7 @@ const FoodLogPage: React.FC = () => {
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">Food Log</h1>
+                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">FoodLogger.me</h1>
               </div>
               <p className="text-slate text-lg font-semibold mb-3">Your diet may be the key to better health</p>
               <p className="text-2xl font-bold bg-gradient-to-r from-amber to-ruby bg-clip-text text-transparent">{formatDate(currentDate)}</p>

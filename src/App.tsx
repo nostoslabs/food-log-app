@@ -42,7 +42,7 @@ const AppContent: React.FC = () => {
               >
                 <span className="text-2xl filter drop-shadow-lg">🍽️</span>
               </motion.div>
-              <h1 className="text-4xl font-black text-white drop-shadow-2xl tracking-tight">Food Log</h1>
+              <h1 className="text-4xl font-black text-white drop-shadow-2xl tracking-tight">FoodLogger.me</h1>
             </div>
             <span className="text-sm bg-white/25 text-white px-3 py-1 rounded-full font-bold backdrop-blur-sm border border-white/20 shadow-lg">
               BETA

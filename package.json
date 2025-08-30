@@ -1,9 +1,9 @@
 {
-  "name": "food-log-app",
+  "name": "foodlogger-me",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "A comprehensive food logging application for tracking daily nutrition and health metrics",
+  "description": "FoodLogger.me - A comprehensive food logging application for tracking daily nutrition and health metrics",
   "keywords": [
     "food",
     "nutrition",
