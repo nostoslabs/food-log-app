@@ -48,6 +48,7 @@ export function useExport(currentDate: Date) {
   // Get logs for export
   const getLogsForExport = async (): Promise<FoodLog[]> => {
     const logs: FoodLog[] = [];
+    let firestoreError: string | null = null;
     
     if (user) {
       try {
@@ -59,8 +60,12 @@ export function useExport(currentDate: Date) {
         
         if (result.success && result.data) {
           logs.push(...result.data);
+        } else if (result.error) {
+          firestoreError = result.error;
+          console.error('Firestore query failed:', result.error);
         }
       } catch (err) {
+        firestoreError = err instanceof Error ? err.message : 'Unknown error';
         console.error('Error fetching logs from Firestore:', err);
       }
     }
@@ -70,13 +75,22 @@ export function useExport(currentDate: Date) {
     const endDate = new Date(exportOptions.endDate);
     const existingDates = new Set(logs.map(log => log.date));
     
-    for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateKey = getDateKey(d);
       if (!existingDates.has(dateKey)) {
         const localLog = loadFromLocalStorage(d);
         if (localLog) {
           logs.push(localLog);
         }
+      }
+    }
+
+    // If no logs found and there was a Firestore error, throw a more specific error
+    if (logs.length === 0 && firestoreError) {
+      if (firestoreError.includes('index') || firestoreError.includes('Index')) {
+        throw new Error('Export failed due to missing database index. Please contact support or try again later.');
+      } else {
+        throw new Error(`Failed to load data from cloud: ${firestoreError}`);
       }
     }
 
