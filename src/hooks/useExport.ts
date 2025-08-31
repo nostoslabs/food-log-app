@@ -1,12 +1,22 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { startOfWeek, endOfWeek } from 'date-fns';
 import type { ExportOptions, FoodLog } from '../types';
 import { useAuth } from './useAuth';
-import { firestoreService } from '../services/firestore';
-import { PDFExportService } from '../services/pdfExport';
-import { generatePlainTextExport, getDateKey, loadFromLocalStorage } from '../utils';
+import { firestoreService, exportService } from '../services';
+import { getDateKey, loadFromLocalStorage } from '../utils';
 
-export function useExport(currentDate: Date) {
+export interface UseExportReturn {
+  exportOptions: ExportOptions;
+  setExportOptions: React.Dispatch<React.SetStateAction<ExportOptions>>;
+  loading: boolean;
+  error: string | null;
+  setDateRange: (type: 'today' | 'week' | 'month') => void;
+  exportAsText: () => Promise<void>;
+  exportAsPDF: () => Promise<void>;
+  clearError: () => void;
+}
+
+export function useExport(currentDate: Date): UseExportReturn {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +29,7 @@ export function useExport(currentDate: Date) {
   });
 
   // Set preset date ranges
-  const setDateRange = (type: 'today' | 'week' | 'month') => {
+  const setDateRange = useCallback((type: 'today' | 'week' | 'month') => {
     const today = currentDate;
     let startDate: Date;
     let endDate: Date;
@@ -43,21 +53,21 @@ export function useExport(currentDate: Date) {
       startDate: getDateKey(startDate),
       endDate: getDateKey(endDate)
     }));
-  };
+  }, [currentDate]);
 
-  // Get logs for export
-  const getLogsForExport = async (): Promise<FoodLog[]> => {
+  // Get logs for export - separated into its own function for clarity
+  const getLogsForExport = useCallback(async (): Promise<FoodLog[]> => {
     const logs: FoodLog[] = [];
     let firestoreError: string | null = null;
-    
+
     if (user) {
       try {
         const result = await firestoreService.getFoodLogsByDateRange(
-          user.uid, 
-          exportOptions.startDate, 
+          user.uid,
+          exportOptions.startDate,
           exportOptions.endDate
         );
-        
+
         if (result.success && result.data) {
           logs.push(...result.data);
         } else if (result.error) {
@@ -74,7 +84,7 @@ export function useExport(currentDate: Date) {
     const startDate = new Date(exportOptions.startDate);
     const endDate = new Date(exportOptions.endDate);
     const existingDates = new Set(logs.map(log => log.date));
-    
+
     for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       const dateKey = getDateKey(d);
       if (!existingDates.has(dateKey)) {
@@ -95,67 +105,40 @@ export function useExport(currentDate: Date) {
     }
 
     return logs.sort((a, b) => a.date.localeCompare(b.date));
-  };
+  }, [user, exportOptions.startDate, exportOptions.endDate]);
 
-  // Export as PDF
-  const exportAsPDF = async () => {
+  // Export as text - simplified to use the service
+  const exportAsText = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
       const logs = await getLogsForExport();
-      
-      if (logs.length === 0) {
-        throw new Error('No food log data found for the selected date range');
-      }
-
-      const exportData = {
-        logs,
-        user: user || { uid: 'anonymous', email: null, displayName: 'Anonymous User', photoURL: null },
-        options: exportOptions,
-        generatedAt: new Date().toISOString()
-      };
-      
-      await PDFExportService.downloadPDF(exportData);
+      await exportService.exportAsText(logs, exportOptions);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Export failed');
+      throw err; // Re-throw to allow caller to handle
     } finally {
       setLoading(false);
     }
-  };
+  }, [getLogsForExport, exportOptions]);
 
-  // Export as text
-  const exportAsText = async () => {
+  // Export as PDF - placeholder for now
+  const exportAsPDF = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const logs = await getLogsForExport();
-      
-      if (logs.length === 0) {
-        throw new Error('No food log data found for the selected date range');
-      }
-
-      const textContent = generatePlainTextExport(logs);
-      
-      // Download as text file
-      const blob = new Blob([textContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `food-log-${exportOptions.startDate}-to-${exportOptions.endDate}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      await exportService.exportAsPDF();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Export failed');
+      throw err; // Re-throw to allow caller to handle
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const clearError = () => setError(null);
+  const clearError = useCallback(() => setError(null), []);
 
   return {
     exportOptions,
@@ -163,8 +146,8 @@ export function useExport(currentDate: Date) {
     loading,
     error,
     setDateRange,
-    exportAsPDF,
     exportAsText,
+    exportAsPDF,
     clearError
   };
 }
