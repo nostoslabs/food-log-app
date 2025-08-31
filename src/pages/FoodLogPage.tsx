@@ -62,18 +62,18 @@ const FoodLogPage: React.FC = () => {
         transition={{ duration: 0.3 }}
       >
         <div className="p-8">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-8 w-full">
             <motion.button 
               onClick={() => changeDate(-1)}
-              className="btn-glass p-4 hover:scale-110"
+              className="btn-glass p-4 hover:scale-110 flex-shrink-0 z-10 border-2 border-white/30 shadow-lg"
               aria-label="Previous day"
               whileHover={{ scale: 1.1, rotate: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-6 h-6 text-white drop-shadow-sm" />
             </motion.button>
             
-            <div className="text-center">
+            <div className="text-center flex-1 px-4">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />
@@ -89,12 +89,12 @@ const FoodLogPage: React.FC = () => {
             
             <motion.button 
               onClick={() => changeDate(1)}
-              className="btn-glass p-4 hover:scale-110"
+              className="btn-glass p-4 hover:scale-110 flex-shrink-0 z-10 border-2 border-white/30 shadow-lg"
               aria-label="Next day"
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-6 h-6 text-white drop-shadow-sm" />
             </motion.button>
           </div>
 
@@ -170,33 +170,47 @@ const FoodLogPage: React.FC = () => {
         />
 
         {/* Snacks Section */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-5 h-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-gray-800">Snacks</h3>
+        <motion.div 
+          className="food-section"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          whileHover={{ scale: 1.02, y: -4 }}
+        >
+          <div className="flex items-center gap-6 mb-6">
+            <motion.div 
+              className="w-14 h-14 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/50 flex items-center justify-center shadow-lg"
+              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Clock className="w-7 h-7 text-green-600" />
+            </motion.div>
+            <h3 className="text-2xl font-semibold text-gray-900">Snacks</h3>
           </div>
           
-          <SnackSection 
-            snackName="midMorningSnack"
-            snackData={foodLog.midMorningSnack}
-            displayName="Mid-Morning Snack"
-            onUpdate={(field, value) => updateSnack('midMorningSnack', field, value)}
-          />
-          
-          <SnackSection 
-            snackName="midDaySnack"
-            snackData={foodLog.midDaySnack}
-            displayName="Mid-Day Snack"
-            onUpdate={(field, value) => updateSnack('midDaySnack', field, value)}
-          />
-          
-          <SnackSection 
-            snackName="nighttimeSnack"
-            snackData={foodLog.nighttimeSnack}
-            displayName="Nighttime Snack"
-            onUpdate={(field, value) => updateSnack('nighttimeSnack', field, value)}
-          />
-        </div>
+          <div className="space-y-3">
+            <SnackSection 
+              snackName="midMorningSnack"
+              snackData={foodLog.midMorningSnack}
+              displayName="Mid-Morning Snack"
+              onUpdate={(field, value) => updateSnack('midMorningSnack', field, value)}
+            />
+            
+            <SnackSection 
+              snackName="midDaySnack"
+              snackData={foodLog.midDaySnack}
+              displayName="Mid-Day Snack"
+              onUpdate={(field, value) => updateSnack('midDaySnack', field, value)}
+            />
+            
+            <SnackSection 
+              snackName="nighttimeSnack"
+              snackData={foodLog.nighttimeSnack}
+              displayName="Nighttime Snack"
+              onUpdate={(field, value) => updateSnack('nighttimeSnack', field, value)}
+            />
+          </div>
+        </motion.div>
 
         {/* Health Metrics */}
         <HealthMetricsSection 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
 import type { FoodLog } from '../../types';
 
@@ -12,10 +13,22 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   onUpdate 
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center gap-2 mb-3">
-        <FileText className="w-5 h-5 text-gray-600" />
-        <h3 className="text-lg font-semibold text-gray-800">Notes</h3>
+    <motion.div 
+      className="food-section"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      whileHover={{ scale: 1.02, y: -4 }}
+    >
+      <div className="flex items-center gap-6 mb-6">
+        <motion.div 
+          className="w-14 h-14 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/50 flex items-center justify-center shadow-lg"
+          whileHover={{ scale: 1.05, rotate: 5 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <FileText className="w-7 h-7 text-gray-600" />
+        </motion.div>
+        <h3 className="text-2xl font-semibold text-gray-900">Notes</h3>
       </div>
       <textarea
         value={foodLog.notes}
@@ -24,7 +37,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
         className="input-field resize-none"
         placeholder="Additional observations, symptoms, or notes about your day..."
       />
-    </div>
+    </motion.div>
   );
 };
 
