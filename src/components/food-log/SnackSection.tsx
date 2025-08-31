@@ -1,4 +1,7 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { Clock } from 'lucide-react';
+import { TimeInput, TextInput } from '../ui';
 import type { SnackSectionProps } from '../../types';
 
 const SnackSection: React.FC<SnackSectionProps> = ({
@@ -7,30 +10,38 @@ const SnackSection: React.FC<SnackSectionProps> = ({
   onUpdate
 }) => {
   return (
-    <div className="bg-gray-50 rounded-lg p-3 mb-3">
-      <h4 className="text-md font-medium text-gray-700 mb-2">{displayName}</h4>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Time</label>
-          <input
-            type="time"
-            value={snackData.time}
-            onChange={(e) => onUpdate('time', e.target.value)}
-            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Snack</label>
-          <input
-            type="text"
-            value={snackData.snack}
-            onChange={(e) => onUpdate('snack', e.target.value)}
-            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary-500 focus:border-transparent"
-            placeholder="nuts, fruit..."
-          />
-        </div>
+    <motion.div 
+      className="food-section"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      whileHover={{ scale: 1.02, y: -4 }}
+    >
+      <div className="flex items-center gap-6 mb-6">
+        <motion.div 
+          className="w-14 h-14 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/50 flex items-center justify-center shadow-lg"
+          whileHover={{ scale: 1.05, rotate: 5 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Clock className="w-7 h-7 text-green-600" />
+        </motion.div>
+        <h3 className="text-2xl font-semibold text-gray-900">{displayName}</h3>
       </div>
-    </div>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <TimeInput
+          label="Time"
+          value={snackData.time}
+          onChange={(value) => onUpdate('time', value)}
+        />
+        <TextInput
+          label="Snack"
+          value={snackData.snack}
+          onChange={(value) => onUpdate('snack', value)}
+          placeholder="nuts, fruit, yogurt..."
+        />
+      </div>
+    </motion.div>
   );
 };
 
