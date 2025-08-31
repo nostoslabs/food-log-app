@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Download, Save, Loader2 } from 'lucide-react';
 import { formatDate } from '../utils';
-import { useFoodLog } from '../hooks/useFoodLog';
-import { useAuth } from '../hooks/useAuth';
-import MealSection from '../components/food-log/MealSection';
-import SnackSection from '../components/food-log/SnackSection';
-import HealthMetricsSection from '../components/food-log/HealthMetricsSection';
-import SleepSection from '../components/food-log/SleepSection';
-import NotesSection from '../components/food-log/NotesSection';
-import ExportModal from '../components/export/ExportModal';
+import { useFoodLog, useAuth, useDateNavigation } from '../hooks';
+import { 
+  MealSection, 
+  SnackSection, 
+  HealthMetricsSection, 
+  SleepSection, 
+  NotesSection, 
+  ExportModal 
+} from '../components';
 
 const FoodLogPage: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
   const [showExportModal, setShowExportModal] = useState(false);
   const { user } = useAuth();
+  const { currentDate, changeDate } = useDateNavigation();
   
   const {
     foodLog,
@@ -27,12 +28,6 @@ const FoodLogPage: React.FC = () => {
     forceSave,
     clearError
   } = useFoodLog(currentDate);
-
-  const changeDate = (days: number) => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(currentDate.getDate() + days);
-    setCurrentDate(newDate);
-  };
 
   const handleExport = () => {
     setShowExportModal(true);
@@ -79,14 +74,17 @@ const FoodLogPage: React.FC = () => {
             </motion.button>
             
             <div className="text-center">
-              <div className="flex items-center justify-center gap-3 mb-3">
+              <div className="flex items-center justify-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />
                 </div>
                 <h1 className="text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">FoodLogger.me</h1>
               </div>
-              <p className="text-slate text-lg font-semibold mb-3">Your diet may be the key to better health</p>
-              <p className="text-2xl font-bold bg-gradient-to-r from-amber to-ruby bg-clip-text text-transparent">{formatDate(currentDate)}</p>
+              <p className="text-slate text-lg font-semibold mb-2">Your diet may be the key to better health</p>
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-4 py-3 mb-4">
+                <p className="text-xl font-bold text-gray-800 mb-1">{formatDate(currentDate)}</p>
+                <p className="text-sm text-gray-600">Use arrows to navigate between days</p>
+              </div>
             </div>
             
             <motion.button 
@@ -125,7 +123,7 @@ const FoodLogPage: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Download className="w-5 h-5" />
-              Export for Doctor
+              Export
             </motion.button>
           </div>
         </div>

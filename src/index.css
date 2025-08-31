@@ -7,50 +7,28 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 5% 15%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 5% 15%;
+    --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 5% 15%;
-    --primary: 158 64% 52%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 9% 46%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 210 40% 95%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 267 84% 81%;
-    --accent-foreground: 240 5% 15%;
-    --destructive: 0 84% 60%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 94%;
-    --ring: 158 64% 52%;
-    --radius: 1rem;
-    
-    /* Jewel Tone Palette */
-    --emerald: 158 64% 52%;      /* Primary emerald */
-    --emerald-light: 158 64% 88%;
-    --emerald-dark: 158 64% 35%;
-    
-    --sapphire: 217 91% 60%;     /* Complementary blue */
-    --sapphire-light: 217 91% 88%;
-    --sapphire-dark: 217 91% 40%;
-    
-    --amethyst: 267 84% 81%;     /* Purple accent */
-    --amethyst-light: 267 84% 92%;
-    --amethyst-dark: 267 84% 65%;
-    
-    --amber: 45 96% 53%;         /* Warm accent */
-    --amber-light: 45 96% 88%;
-    --amber-dark: 45 96% 40%;
-    
-    --ruby: 348 83% 47%;         /* Deep red */
-    --ruby-light: 348 83% 88%;
-    --ruby-dark: 348 83% 30%;
-    
-    --pearl: 210 40% 98%;        /* Soft neutral */
-    --slate: 220 9% 46%;         /* Medium neutral */
-    --charcoal: 240 5% 15%;      /* Dark neutral */
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+    /* Brand colors matching nostoslabs.com */
+    --brand-primary: 22 82% 56%; /* #ea580c - orange-600 */
+    --brand-secondary: 0 73% 51%; /* #dc2626 - red-600 */
   }
 
   .dark {
@@ -87,14 +65,7 @@
   }
   
   body {
-    background: linear-gradient(135deg, 
-      hsl(var(--emerald-light)) 0%,
-      hsl(var(--sapphire-light)) 25%,
-      hsl(var(--amethyst-light)) 50%,
-      hsl(var(--amber-light)) 75%,
-      hsl(var(--emerald-light)) 100%);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    background: hsl(var(--background));
     color: hsl(var(--foreground));
     min-height: 100vh;
     margin: 0;
@@ -113,7 +84,7 @@
 
 @layer components {
   .btn-primary {
-    background-color: hsl(var(--brand-orange));
+    background-color: hsl(var(--brand-primary));
     color: hsl(var(--primary-foreground));
     font-weight: 600;
     padding: 0.75rem 1.5rem;
@@ -158,41 +129,35 @@
   .input-field {
     width: 100%;
     padding: 1rem 1.25rem;
-    border: 2px solid hsla(var(--emerald), 0.3);
-    border-radius: 1rem;
+    border: 2px solid hsl(var(--border));
+    border-radius: 0.75rem;
     font-size: 1rem;
-    background: linear-gradient(135deg, 
-      white,
-      hsla(var(--emerald-light), 0.1));
-    color: hsl(var(--charcoal));
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px hsla(var(--emerald), 0.15), inset 0 1px 0 rgba(255,255,255,0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     font-weight: 500;
-    min-height: 44px;
-    cursor: pointer;
+    min-height: 48px;
   }
   
   .input-field:focus {
     outline: none;
-    border-color: hsl(var(--emerald));
-    background: white;
-    box-shadow: 0 0 0 4px hsla(var(--emerald), 0.2), 0 4px 16px hsla(var(--emerald), 0.25);
-    transform: translateY(-1px) scale(1.01);
+    border-color: hsl(var(--brand-primary));
+    background: hsl(var(--background));
+    box-shadow: 0 0 0 3px hsla(var(--brand-primary), 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
   }
   
   .input-field:hover:not(:focus) {
-    border-color: hsl(var(--emerald));
-    box-shadow: 0 3px 12px hsla(var(--emerald), 0.2);
-    transform: translateY(-1px);
+    border-color: hsl(var(--brand-primary));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .form-label {
     display: block;
     font-size: 0.875rem;
     font-weight: 700;
-    color: white;
+    color: hsl(var(--foreground));
     margin-bottom: 0.75rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     text-transform: uppercase;
@@ -208,46 +173,35 @@
   }
 
   .food-section {
-    background: linear-gradient(135deg, 
-      hsl(var(--emerald)) 0%,
-      hsl(var(--sapphire)) 50%,
-      hsl(var(--amethyst)) 100%);
-    opacity: 0.95;
-    border: 2px solid hsla(var(--pearl), 0.3);
-    border-radius: 1.5rem;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
     padding: 1.5rem;
     margin-bottom: 1rem;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: white;
-    box-shadow: 0 4px 20px hsla(var(--emerald), 0.25);
+    color: hsl(var(--card-foreground));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   }
 
   .food-section:hover {
-    box-shadow: 0 16px 40px hsla(var(--emerald), 0.4), 0 8px 16px hsla(var(--sapphire), 0.3);
-    transform: translateY(-6px) scale(1.02);
-    border-color: hsl(var(--pearl));
-    opacity: 1;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px) scale(1.01);
+    border-color: hsl(var(--border));
+    background: hsl(var(--muted));
   }
 
   .gradient-header {
     background: linear-gradient(135deg, 
-      hsl(var(--emerald)) 0%,
-      hsl(var(--sapphire)) 25%,
-      hsl(var(--amethyst)) 50%,
-      hsl(var(--ruby)) 75%,
-      hsl(var(--amber)) 100%);
-    background-size: 300% 300%;
-    animation: gradientFlow 12s ease infinite;
+      hsl(var(--brand-primary)) 0%,
+      hsl(var(--brand-secondary)) 100%);
     color: white;
-    padding: 3rem 1rem;
+    padding: 2rem 1rem;
     text-align: center;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 32px hsla(var(--emerald), 0.4);
+    box-shadow: 0 4px 20px hsla(var(--brand-primary), 0.3);
   }
   
   @keyframes gradientFlow {

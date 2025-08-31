@@ -5,12 +5,44 @@ import {
   sendPasswordResetEmail,
   updateProfile,
   onAuthStateChanged,
+  signInWithPopup,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
   type User as FirebaseUser
 } from 'firebase/auth';
 import { auth } from './firebase';
 import type { User } from '../types';
 
 export class AuthService {
+  private googleProvider = new GoogleAuthProvider();
+  private facebookProvider = new FacebookAuthProvider();
+
+  constructor() {
+    this.googleProvider.addScope('email');
+    this.googleProvider.addScope('profile');
+    this.facebookProvider.addScope('email');
+  }
+
+  // Sign in with Google
+  async signInWithGoogle(): Promise<User> {
+    try {
+      const result = await signInWithPopup(auth, this.googleProvider);
+      return this.mapFirebaseUser(result.user);
+    } catch (error) {
+      throw this.handleAuthError(error);
+    }
+  }
+
+  // Sign in with Facebook
+  async signInWithFacebook(): Promise<User> {
+    try {
+      const result = await signInWithPopup(auth, this.facebookProvider);
+      return this.mapFirebaseUser(result.user);
+    } catch (error) {
+      throw this.handleAuthError(error);
+    }
+  }
+
   // Sign up with email and password
   async signUp(email: string, password: string, displayName?: string): Promise<User> {
     try {

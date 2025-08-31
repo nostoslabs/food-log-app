@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { X, Download, Loader2, FileText } from 'lucide-react';
-import { startOfWeek, endOfWeek } from 'date-fns';
-import type { ExportOptions, ExportData } from '../../types';
+import { useExport } from '../../hooks/useExport';
 import { useAuth } from '../../hooks/useAuth';
-import { firestoreService } from '../../services/firestore';
-import { PDFExportService } from '../../services/pdfExport';
-import { generatePlainTextExport, getDateKey } from '../../utils';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -14,105 +10,30 @@ interface ExportModalProps {
 }
 
 const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, currentDate }) => {
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [exportOptions, setExportOptions] = useState<ExportOptions>({
-    startDate: getDateKey(currentDate),
-    endDate: getDateKey(currentDate),
-    includeHealthMetrics: true,
-    includeNotes: true
-  });
   const [exportFormat, setExportFormat] = useState<'pdf' | 'text'>('pdf');
+  const { user } = useAuth();
+  const {
+    exportOptions,
+    setExportOptions,
+    loading,
+    error,
+    setDateRange,
+    exportAsPDF,
+    exportAsText
+  } = useExport(currentDate);
 
-  // Preset date ranges
-  const setDateRange = (type: 'today' | 'week' | 'month') => {
-    const today = currentDate;
-    let startDate: Date;
-    let endDate: Date;
-
-    switch (type) {
-      case 'today':
-        startDate = endDate = today;
-        break;
-      case 'week':
-        startDate = startOfWeek(today);
-        endDate = endOfWeek(today);
-        break;
-      case 'month':
-        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        break;
-    }
-
-    setExportOptions(prev => ({
-      ...prev,
-      startDate: getDateKey(startDate),
-      endDate: getDateKey(endDate)
-    }));
-  };
 
   // Handle export
   const handleExport = async () => {
-    if (!user) {
-      setError('Please sign in to export your food logs');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
     try {
-      // Fetch food logs for the date range
-      const result = await firestoreService.getFoodLogsByDateRange(
-        user.uid,
-        exportOptions.startDate,
-        exportOptions.endDate
-      );
-
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch food logs');
-      }
-
-      const logs = result.data || [];
-
-      if (logs.length === 0) {
-        setError('No food logs found for the selected date range');
-        return;
-      }
-
-      // Create export data
-      const exportData: ExportData = {
-        logs,
-        user,
-        options: exportOptions,
-        generatedAt: new Date().toISOString()
-      };
-
-      // Export based on format
       if (exportFormat === 'pdf') {
-        await PDFExportService.downloadPDF(exportData);
+        await exportAsPDF();
       } else {
-        // Text export
-        const textContent = generatePlainTextExport(logs);
-        const filename = `food-log-${exportOptions.startDate}${exportOptions.startDate !== exportOptions.endDate ? `-to-${exportOptions.endDate}` : ''}.txt`;
-        
-        const blob = new Blob([textContent], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        await exportAsText();
       }
-
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Export failed');
-    } finally {
-      setLoading(false);
+      // Error is already handled by the hook
     }
   };
 
@@ -141,8 +62,9 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, currentDate 
           )}
 
           {!user && (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
-              Please sign in to export your food logs from the cloud. Local data export is not yet available.
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+              💡 <strong>Local Export:</strong> This will export your current day's data from local storage.
+              <br />Sign in to export multiple days from the cloud.
             </div>
           )}
 
@@ -276,7 +198,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, currentDate 
         <div className="p-4 border-t flex gap-2">
           <button
             onClick={handleExport}
-            disabled={loading || !user}
+            disabled={loading}
             className="flex-1 btn-primary disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (

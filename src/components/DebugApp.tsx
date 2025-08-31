@@ -2,11 +2,6 @@ import React from 'react';
 import { auth, db, isFirebaseConfigured } from '../services/firebase';
 
 const DebugApp: React.FC = () => {
-  console.log('DebugApp render');
-  console.log('Firebase configured:', isFirebaseConfigured);
-  console.log('Auth object:', auth);
-  console.log('DB object:', db);
-
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h1>Firebase Debug Page</h1>

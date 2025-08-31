@@ -9,6 +9,8 @@ const AuthContext = createContext<{
   error: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, displayName?: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
@@ -16,15 +18,11 @@ const AuthContext = createContext<{
 
 // Auth provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
-  console.log('AuthProvider initializing');
-  
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     loading: true,
     error: null
   });
-  
-  console.log('AuthProvider state:', authState);
 
   // Clear error
   const clearError = () => {
@@ -57,6 +55,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ...prev,
         loading: false,
         error: error instanceof Error ? error.message : 'Sign up failed'
+      }));
+    }
+  };
+
+  // Sign in with Google
+  const signInWithGoogle = async () => {
+    try {
+      setAuthState(prev => ({ ...prev, loading: true, error: null }));
+      const user = await authService.signInWithGoogle();
+      setAuthState(prev => ({ ...prev, user, loading: false }));
+    } catch (error) {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: error instanceof Error ? error.message : 'Google sign in failed'
+      }));
+    }
+  };
+
+  // Sign in with Facebook
+  const signInWithFacebook = async () => {
+    try {
+      setAuthState(prev => ({ ...prev, loading: true, error: null }));
+      const user = await authService.signInWithFacebook();
+      setAuthState(prev => ({ ...prev, user, loading: false }));
+    } catch (error) {
+      setAuthState(prev => ({
+        ...prev,
+        loading: false,
+        error: error instanceof Error ? error.message : 'Facebook sign in failed'
       }));
     }
   };
@@ -111,6 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error: authState.error,
     signIn,
     signUp,
+    signInWithGoogle,
+    signInWithFacebook,
     signOut,
     resetPassword,
     clearError

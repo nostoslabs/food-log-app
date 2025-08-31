@@ -18,6 +18,12 @@ import type { FoodLog, ApiResponse } from '../types';
 export class FirestoreService {
   private readonly COLLECTION_NAME = 'foodLogs';
 
+  // Helper method to convert Firestore timestamps to ISO strings
+  private convertTimestamp(timestamp: any): string {
+    if (!timestamp) return new Date().toISOString();
+    return timestamp.toDate?.()?.toISOString() || timestamp;
+  }
+
   // Create a new food log
   async createFoodLog(foodLog: Omit<FoodLog, 'id'>): Promise<ApiResponse<FoodLog>> {
     try {
@@ -27,11 +33,15 @@ export class FirestoreService {
         updatedAt: serverTimestamp()
       });
 
+      // Get the created document to return accurate server timestamps
+      const createdDoc = await getDoc(docRef);
+      const createdData = createdDoc.data();
+      
       const createdLog = {
         ...foodLog,
         id: docRef.id,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: this.convertTimestamp(createdData?.createdAt),
+        updatedAt: this.convertTimestamp(createdData?.updatedAt)
       };
 
       return {
@@ -59,8 +69,8 @@ export class FirestoreService {
         const foodLog: FoodLog = {
           id: docSnap.id,
           ...data,
-          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt
+          createdAt: this.convertTimestamp(data.createdAt),
+          updatedAt: this.convertTimestamp(data.updatedAt)
         } as FoodLog;
 
         return {
@@ -100,8 +110,8 @@ export class FirestoreService {
         const foodLog: FoodLog = {
           id: doc.id,
           ...data,
-          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt
+          createdAt: this.convertTimestamp(data.createdAt),
+          updatedAt: this.convertTimestamp(data.updatedAt)
         } as FoodLog;
 
         return {
@@ -139,8 +149,8 @@ export class FirestoreService {
         return {
           id: doc.id,
           ...data,
-          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt
+          createdAt: this.convertTimestamp(data.createdAt),
+          updatedAt: this.convertTimestamp(data.updatedAt)
         } as FoodLog;
       });
 
@@ -178,8 +188,8 @@ export class FirestoreService {
         return {
           id: doc.id,
           ...data,
-          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt
+          createdAt: this.convertTimestamp(data.createdAt),
+          updatedAt: this.convertTimestamp(data.updatedAt)
         } as FoodLog;
       });
 

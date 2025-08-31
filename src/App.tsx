@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
 import { LogOut, User, Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import AuthForm from './components/auth/AuthForm';
 import FoodLogPage from './pages/FoodLogPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const AppContent: React.FC = () => {
   const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const location = useLocation();
 
   const handleSignOut = async () => {
     try {
@@ -32,63 +36,73 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation Bar */}
-      <nav className="gradient-header">
-        <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center relative z-10">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Navigation Bar - only show on main page */}
+      {location.pathname === '/' && (
+        <nav className="gradient-header">
+          <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center relative z-10">
             <div className="flex items-center gap-4">
-              <motion.div 
-                className="w-14 h-14 rounded-full bg-gradient-to-br from-white/40 via-white/20 to-white/10 flex items-center justify-center backdrop-blur-xl border-2 border-white/30 shadow-xl"
-                whileHover={{ scale: 1.1, rotate: 10 }}
-              >
-                <span className="text-2xl filter drop-shadow-lg">🍽️</span>
-              </motion.div>
-              <h1 className="text-4xl font-black text-white drop-shadow-2xl tracking-tight">FoodLogger.me</h1>
+              <div className="flex items-center gap-4">
+                <motion.div 
+                  className="w-16 h-16 rounded-full bg-gradient-to-br from-white/40 via-white/20 to-white/10 flex items-center justify-center backdrop-blur-xl border-2 border-white/30 shadow-xl"
+                  whileHover={{ scale: 1.1, rotate: 10 }}
+                >
+                  <span className="text-3xl filter drop-shadow-lg">🍽️</span>
+                </motion.div>
+                <h1 className="text-4xl font-black text-white drop-shadow-2xl tracking-tight">foodlogger.me</h1>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-white/90 hidden sm:inline font-medium">
+                    {user.displayName || user.email}
+                  </span>
+                  <button
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 text-sm text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <motion.button
+                  onClick={() => setShowAuthModal(true)}
+                  className="relative px-8 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-white/20 via-white/30 to-white/20 backdrop-blur-xl border-2 border-white/40 shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden"
+                  whileHover={{ 
+                    scale: 1.08, 
+                    y: -3,
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/30 to-purple-400/30 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-full" />
+                  <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-none" />
+                  <div className="relative flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold tracking-wider drop-shadow-sm">Sign In</span>
+                  </div>
+                </motion.button>
+              )}
             </div>
           </div>
-          
-          <div className="flex items-center gap-3">
-            {user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-white/90 hidden sm:inline font-medium">
-                  {user.displayName || user.email}
-                </span>
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center gap-2 text-sm text-white/90 hover:text-white px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-              </div>
-            ) : (
-              <motion.button
-                onClick={() => setShowAuthModal(true)}
-                className="relative px-8 py-3 rounded-full font-semibold text-white bg-gradient-to-r from-white/20 via-white/30 to-white/20 backdrop-blur-xl border-2 border-white/40 shadow-lg hover:shadow-xl transition-all duration-300 group overflow-hidden"
-                whileHover={{ 
-                  scale: 1.08, 
-                  y: -3,
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.2)'
-                }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/30 to-sapphire-400/30 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-full" />
-                <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/10 to-transparent group-hover:animate-none" />
-                <div className="relative flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <span className="text-sm font-bold tracking-wider drop-shadow-sm">Sign In</span>
-                </div>
-              </motion.button>
-            )}
-          </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
       {/* Main Content */}
-      <FoodLogPage />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<FoodLogPage />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+        </Routes>
+      </main>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Auth Modal */}
       <AnimatePresence>
@@ -125,10 +139,12 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <AppContent />
-        <Analytics />
-      </AuthProvider>
+      <Router>
+        <AuthProvider>
+          <AppContent />
+          <Analytics />
+        </AuthProvider>
+      </Router>
     </ErrorBoundary>
   );
 };

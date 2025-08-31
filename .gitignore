@@ -109,3 +109,5 @@ storybook-static
 # Temporary folders
 tmp/
 temp/
+firestore-indexes.txt
+firestore-security-rules.txt
