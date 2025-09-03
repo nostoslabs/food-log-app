@@ -8,8 +8,11 @@ export { default as HealthMetricsSection } from './food-log/HealthMetricsSection
 export { default as SleepSection } from './food-log/SleepSection';
 export { default as NotesSection } from './food-log/NotesSection';
 
-// Export components
-export { default as ExportModal } from './export/ExportModal';
+// Navigation components
+export { default as BottomTabs } from './navigation/BottomTabs';
+
+// Timeline components
+export { TimelineEntry } from './timeline/TimelineEntry';
 
 // Utility components
 export { default as ErrorBoundary } from './ErrorBoundary';

@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Calendar, Download, Save, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Save, Loader2 } from 'lucide-react';
 import { formatDate } from '../utils';
 import { useFoodLog, useAuth, useDateNavigation } from '../hooks';
-import { 
-  MealSection, 
-  SnackSection, 
-  HealthMetricsSection, 
-  SleepSection, 
-  NotesSection, 
-  ExportModal 
+import {
+  MealSection,
+  SnackSection,
+  HealthMetricsSection,
+  SleepSection,
+  NotesSection
 } from '../components';
 
 const FoodLogPage: React.FC = () => {
-  const [showExportModal, setShowExportModal] = useState(false);
   const { user } = useAuth();
   const { currentDate, changeDate } = useDateNavigation();
   
@@ -28,10 +26,6 @@ const FoodLogPage: React.FC = () => {
     forceSave,
     clearError
   } = useFoodLog(currentDate);
-
-  const handleExport = () => {
-    setShowExportModal(true);
-  };
 
   const handleSave = async () => {
     try {
@@ -56,45 +50,45 @@ const FoodLogPage: React.FC = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <motion.div 
-        className="glass-card mx-6 mt-6 mb-4"
+        className="glass-card mx-4 mt-4 mb-4 md:mx-6 md:mt-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="p-8">
-          <div className="flex items-center justify-between mb-8 w-full">
+        <div className="p-4 md:p-8">
+          <div className="flex items-center justify-between mb-4 md:mb-8 w-full">
             <motion.button 
               onClick={() => changeDate(-1)}
-              className="btn-glass p-4 hover:scale-110 flex-shrink-0 z-10 border-2 border-white/30 shadow-lg"
+              className="btn-glass p-2 md:p-4 hover:scale-110 flex-shrink-0 z-10 border-2 border-white/30 shadow-lg"
               aria-label="Previous day"
               whileHover={{ scale: 1.1, rotate: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <ChevronLeft className="w-6 h-6 text-white drop-shadow-sm" />
+              <ChevronLeft className="w-4 h-4 md:w-6 md:h-6 text-white drop-shadow-sm" />
             </motion.button>
             
-            <div className="text-center flex-1 px-4">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-white" />
+            <div className="text-center flex-1 px-2 md:px-4">
+              <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
+                  <Calendar className="w-4 h-4 md:w-6 md:h-6 text-white" />
                 </div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">FoodLogger.me</h1>
+                <h1 className="text-xl md:text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">FoodLogger.me</h1>
               </div>
-              <p className="text-slate text-lg font-semibold mb-2">Your diet may be the key to better health</p>
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-4 py-3 mb-4">
-                <p className="text-xl font-bold text-gray-800 mb-1">{formatDate(currentDate)}</p>
-                <p className="text-sm text-gray-600">Use arrows to navigate between days</p>
+              <p className="text-slate text-sm md:text-lg font-semibold mb-2">Your diet may be the key to better health</p>
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-3 md:px-4 py-2 md:py-3 mb-2 md:mb-4">
+                <p className="text-base md:text-lg lg:text-xl font-bold text-gray-800 mb-1">{formatDate(currentDate)}</p>
+                <p className="text-xs md:text-sm text-gray-600">Use arrows to navigate between days</p>
               </div>
             </div>
             
             <motion.button 
               onClick={() => changeDate(1)}
-              className="btn-glass p-4 hover:scale-110 flex-shrink-0 z-10 border-2 border-white/30 shadow-lg"
+              className="btn-glass p-2 md:p-4 hover:scale-110 flex-shrink-0 z-10 border-2 border-white/30 shadow-lg"
               aria-label="Next day"
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <ChevronRight className="w-6 h-6 text-white drop-shadow-sm" />
+              <ChevronRight className="w-4 h-4 md:w-6 md:h-6 text-white drop-shadow-sm" />
             </motion.button>
           </div>
 
@@ -115,23 +109,13 @@ const FoodLogPage: React.FC = () => {
                 {saving ? 'Saving...' : 'Save Changes'}
               </motion.button>
             )}
-            
-            <motion.button
-              onClick={handleExport}
-              className="btn-primary text-lg px-8 py-4"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Download className="w-5 h-5" />
-              Export
-            </motion.button>
           </div>
         </div>
       </motion.div>
 
       {/* Error Message */}
       {error && (
-        <div className="max-w-7xl mx-auto px-6 pt-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-4">
           <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg animate-slide-up">
             <div className="flex justify-between items-center">
               <p className="text-destructive text-sm font-medium">{error}</p>
@@ -224,13 +208,6 @@ const FoodLogPage: React.FC = () => {
           )}
         </div>
       </div>
-
-      {/* Export Modal */}
-      <ExportModal
-        isOpen={showExportModal}
-        onClose={() => setShowExportModal(false)}
-        currentDate={currentDate}
-      />
     </div>
   );
 };

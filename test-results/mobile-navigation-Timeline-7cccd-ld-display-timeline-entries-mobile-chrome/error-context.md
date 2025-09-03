@@ -1,0 +1,408 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - main [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]:
+          - generic [ref=e8]:
+            - generic [ref=e9]:
+              - img [ref=e10]
+              - heading "Food Timeline" [level=1] [ref=e12]
+            - button [ref=e13]:
+              - img [ref=e14]
+          - paragraph [ref=e19]: Wednesday, September 3, 2025
+        - generic [ref=e20]:
+          - heading "Today's Summary" [level=2] [ref=e21]
+          - generic [ref=e22]:
+            - generic [ref=e23]:
+              - paragraph [ref=e24]: "3"
+              - paragraph [ref=e25]: Meals
+            - generic [ref=e26]:
+              - paragraph [ref=e27]: "76"
+              - paragraph [ref=e28]: oz Water
+            - generic [ref=e29]:
+              - paragraph [ref=e30]: "2"
+              - paragraph [ref=e31]: Snacks
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - paragraph [ref=e35]: Sep 3, 2025
+            - generic [ref=e37]:
+              - generic [ref=e38]:
+                - img [ref=e41]
+                - generic [ref=e44]:
+                  - generic [ref=e45]:
+                    - heading "Breakfast" [level=3] [ref=e46]
+                    - generic [ref=e47]: 8:00 AM
+                  - paragraph [ref=e48]: Oatmeal with berries, coffee
+                  - generic [ref=e49]:
+                    - img [ref=e50]
+                    - generic [ref=e53]: 16 oz water
+              - generic [ref=e54]:
+                - img [ref=e57]
+                - generic [ref=e61]:
+                  - generic [ref=e62]:
+                    - heading "Water" [level=3] [ref=e63]
+                    - generic [ref=e64]: 10:30 AM
+                  - paragraph [ref=e65]: 32 oz
+                  - generic [ref=e66]:
+                    - img [ref=e67]
+                    - generic [ref=e70]: 32 oz water
+              - generic [ref=e71]:
+                - img [ref=e74]
+                - generic [ref=e78]:
+                  - generic [ref=e79]:
+                    - heading "Lunch" [level=3] [ref=e80]
+                    - generic [ref=e81]: 12:30 PM
+                  - paragraph [ref=e82]: Salad with chicken, sparkling water
+                  - generic [ref=e83]:
+                    - img [ref=e84]
+                    - generic [ref=e87]: 12 oz water
+              - generic [ref=e88]:
+                - img [ref=e91]
+                - generic [ref=e94]:
+                  - generic [ref=e95]:
+                    - heading "Afternoon Snack" [level=3] [ref=e96]
+                    - generic [ref=e97]: 3:00 PM
+                  - paragraph [ref=e98]: Apple and almonds
+              - generic [ref=e99]:
+                - img [ref=e102]
+                - generic [ref=e106]:
+                  - generic [ref=e107]:
+                    - heading "Dinner" [level=3] [ref=e108]
+                    - generic [ref=e109]: 7:00 PM
+                  - paragraph [ref=e110]: Grilled salmon, vegetables, water
+                  - generic [ref=e111]:
+                    - img [ref=e112]
+                    - generic [ref=e115]: 16 oz water
+          - generic [ref=e116]:
+            - paragraph [ref=e118]: Sep 2, 2025
+            - generic [ref=e120]:
+              - generic [ref=e121]:
+                - img [ref=e124]
+                - generic [ref=e127]:
+                  - generic [ref=e128]:
+                    - heading "Breakfast" [level=3] [ref=e129]
+                    - generic [ref=e130]: 8:00 AM
+                  - paragraph [ref=e131]: Oatmeal with berries, coffee
+                  - generic [ref=e132]:
+                    - img [ref=e133]
+                    - generic [ref=e136]: 16 oz water
+              - generic [ref=e137]:
+                - img [ref=e140]
+                - generic [ref=e144]:
+                  - generic [ref=e145]:
+                    - heading "Water" [level=3] [ref=e146]
+                    - generic [ref=e147]: 10:30 AM
+                  - paragraph [ref=e148]: 32 oz
+                  - generic [ref=e149]:
+                    - img [ref=e150]
+                    - generic [ref=e153]: 32 oz water
+              - generic [ref=e154]:
+                - img [ref=e157]
+                - generic [ref=e161]:
+                  - generic [ref=e162]:
+                    - heading "Lunch" [level=3] [ref=e163]
+                    - generic [ref=e164]: 12:30 PM
+                  - paragraph [ref=e165]: Salad with chicken, sparkling water
+                  - generic [ref=e166]:
+                    - img [ref=e167]
+                    - generic [ref=e170]: 12 oz water
+              - generic [ref=e171]:
+                - img [ref=e174]
+                - generic [ref=e177]:
+                  - generic [ref=e178]:
+                    - heading "Afternoon Snack" [level=3] [ref=e179]
+                    - generic [ref=e180]: 3:00 PM
+                  - paragraph [ref=e181]: Apple and almonds
+              - generic [ref=e182]:
+                - img [ref=e185]
+                - generic [ref=e189]:
+                  - generic [ref=e190]:
+                    - heading "Dinner" [level=3] [ref=e191]
+                    - generic [ref=e192]: 7:00 PM
+                  - paragraph [ref=e193]: Grilled salmon, vegetables, water
+                  - generic [ref=e194]:
+                    - img [ref=e195]
+                    - generic [ref=e198]: 16 oz water
+          - generic [ref=e199]:
+            - paragraph [ref=e201]: Sep 1, 2025
+            - generic [ref=e203]:
+              - generic [ref=e204]:
+                - img [ref=e207]
+                - generic [ref=e210]:
+                  - generic [ref=e211]:
+                    - heading "Breakfast" [level=3] [ref=e212]
+                    - generic [ref=e213]: 8:00 AM
+                  - paragraph [ref=e214]: Oatmeal with berries, coffee
+                  - generic [ref=e215]:
+                    - img [ref=e216]
+                    - generic [ref=e219]: 16 oz water
+              - generic [ref=e220]:
+                - img [ref=e223]
+                - generic [ref=e227]:
+                  - generic [ref=e228]:
+                    - heading "Water" [level=3] [ref=e229]
+                    - generic [ref=e230]: 10:30 AM
+                  - paragraph [ref=e231]: 32 oz
+                  - generic [ref=e232]:
+                    - img [ref=e233]
+                    - generic [ref=e236]: 32 oz water
+              - generic [ref=e237]:
+                - img [ref=e240]
+                - generic [ref=e244]:
+                  - generic [ref=e245]:
+                    - heading "Lunch" [level=3] [ref=e246]
+                    - generic [ref=e247]: 12:30 PM
+                  - paragraph [ref=e248]: Salad with chicken, sparkling water
+                  - generic [ref=e249]:
+                    - img [ref=e250]
+                    - generic [ref=e253]: 12 oz water
+              - generic [ref=e254]:
+                - img [ref=e257]
+                - generic [ref=e260]:
+                  - generic [ref=e261]:
+                    - heading "Afternoon Snack" [level=3] [ref=e262]
+                    - generic [ref=e263]: 3:00 PM
+                  - paragraph [ref=e264]: Apple and almonds
+              - generic [ref=e265]:
+                - img [ref=e268]
+                - generic [ref=e272]:
+                  - generic [ref=e273]:
+                    - heading "Dinner" [level=3] [ref=e274]
+                    - generic [ref=e275]: 7:00 PM
+                  - paragraph [ref=e276]: Grilled salmon, vegetables, water
+                  - generic [ref=e277]:
+                    - img [ref=e278]
+                    - generic [ref=e281]: 16 oz water
+          - generic [ref=e282]:
+            - paragraph [ref=e284]: Aug 31, 2025
+            - generic [ref=e286]:
+              - generic [ref=e287]:
+                - img [ref=e290]
+                - generic [ref=e293]:
+                  - generic [ref=e294]:
+                    - heading "Breakfast" [level=3] [ref=e295]
+                    - generic [ref=e296]: 8:00 AM
+                  - paragraph [ref=e297]: Oatmeal with berries, coffee
+                  - generic [ref=e298]:
+                    - img [ref=e299]
+                    - generic [ref=e302]: 16 oz water
+              - generic [ref=e303]:
+                - img [ref=e306]
+                - generic [ref=e310]:
+                  - generic [ref=e311]:
+                    - heading "Water" [level=3] [ref=e312]
+                    - generic [ref=e313]: 10:30 AM
+                  - paragraph [ref=e314]: 32 oz
+                  - generic [ref=e315]:
+                    - img [ref=e316]
+                    - generic [ref=e319]: 32 oz water
+              - generic [ref=e320]:
+                - img [ref=e323]
+                - generic [ref=e327]:
+                  - generic [ref=e328]:
+                    - heading "Lunch" [level=3] [ref=e329]
+                    - generic [ref=e330]: 12:30 PM
+                  - paragraph [ref=e331]: Salad with chicken, sparkling water
+                  - generic [ref=e332]:
+                    - img [ref=e333]
+                    - generic [ref=e336]: 12 oz water
+              - generic [ref=e337]:
+                - img [ref=e340]
+                - generic [ref=e343]:
+                  - generic [ref=e344]:
+                    - heading "Afternoon Snack" [level=3] [ref=e345]
+                    - generic [ref=e346]: 3:00 PM
+                  - paragraph [ref=e347]: Apple and almonds
+              - generic [ref=e348]:
+                - img [ref=e351]
+                - generic [ref=e355]:
+                  - generic [ref=e356]:
+                    - heading "Dinner" [level=3] [ref=e357]
+                    - generic [ref=e358]: 7:00 PM
+                  - paragraph [ref=e359]: Grilled salmon, vegetables, water
+                  - generic [ref=e360]:
+                    - img [ref=e361]
+                    - generic [ref=e364]: 16 oz water
+          - generic [ref=e365]:
+            - paragraph [ref=e367]: Aug 30, 2025
+            - generic [ref=e369]:
+              - generic [ref=e370]:
+                - img [ref=e373]
+                - generic [ref=e376]:
+                  - generic [ref=e377]:
+                    - heading "Breakfast" [level=3] [ref=e378]
+                    - generic [ref=e379]: 8:00 AM
+                  - paragraph [ref=e380]: Oatmeal with berries, coffee
+                  - generic [ref=e381]:
+                    - img [ref=e382]
+                    - generic [ref=e385]: 16 oz water
+              - generic [ref=e386]:
+                - img [ref=e389]
+                - generic [ref=e393]:
+                  - generic [ref=e394]:
+                    - heading "Water" [level=3] [ref=e395]
+                    - generic [ref=e396]: 10:30 AM
+                  - paragraph [ref=e397]: 32 oz
+                  - generic [ref=e398]:
+                    - img [ref=e399]
+                    - generic [ref=e402]: 32 oz water
+              - generic [ref=e403]:
+                - img [ref=e406]
+                - generic [ref=e410]:
+                  - generic [ref=e411]:
+                    - heading "Lunch" [level=3] [ref=e412]
+                    - generic [ref=e413]: 12:30 PM
+                  - paragraph [ref=e414]: Salad with chicken, sparkling water
+                  - generic [ref=e415]:
+                    - img [ref=e416]
+                    - generic [ref=e419]: 12 oz water
+              - generic [ref=e420]:
+                - img [ref=e423]
+                - generic [ref=e426]:
+                  - generic [ref=e427]:
+                    - heading "Afternoon Snack" [level=3] [ref=e428]
+                    - generic [ref=e429]: 3:00 PM
+                  - paragraph [ref=e430]: Apple and almonds
+              - generic [ref=e431]:
+                - img [ref=e434]
+                - generic [ref=e438]:
+                  - generic [ref=e439]:
+                    - heading "Dinner" [level=3] [ref=e440]
+                    - generic [ref=e441]: 7:00 PM
+                  - paragraph [ref=e442]: Grilled salmon, vegetables, water
+                  - generic [ref=e443]:
+                    - img [ref=e444]
+                    - generic [ref=e447]: 16 oz water
+          - generic [ref=e448]:
+            - paragraph [ref=e450]: Aug 29, 2025
+            - generic [ref=e452]:
+              - generic [ref=e453]:
+                - img [ref=e456]
+                - generic [ref=e459]:
+                  - generic [ref=e460]:
+                    - heading "Breakfast" [level=3] [ref=e461]
+                    - generic [ref=e462]: 8:00 AM
+                  - paragraph [ref=e463]: Oatmeal with berries, coffee
+                  - generic [ref=e464]:
+                    - img [ref=e465]
+                    - generic [ref=e468]: 16 oz water
+              - generic [ref=e469]:
+                - img [ref=e472]
+                - generic [ref=e476]:
+                  - generic [ref=e477]:
+                    - heading "Water" [level=3] [ref=e478]
+                    - generic [ref=e479]: 10:30 AM
+                  - paragraph [ref=e480]: 32 oz
+                  - generic [ref=e481]:
+                    - img [ref=e482]
+                    - generic [ref=e485]: 32 oz water
+              - generic [ref=e486]:
+                - img [ref=e489]
+                - generic [ref=e493]:
+                  - generic [ref=e494]:
+                    - heading "Lunch" [level=3] [ref=e495]
+                    - generic [ref=e496]: 12:30 PM
+                  - paragraph [ref=e497]: Salad with chicken, sparkling water
+                  - generic [ref=e498]:
+                    - img [ref=e499]
+                    - generic [ref=e502]: 12 oz water
+              - generic [ref=e503]:
+                - img [ref=e506]
+                - generic [ref=e509]:
+                  - generic [ref=e510]:
+                    - heading "Afternoon Snack" [level=3] [ref=e511]
+                    - generic [ref=e512]: 3:00 PM
+                  - paragraph [ref=e513]: Apple and almonds
+              - generic [ref=e514]:
+                - img [ref=e517]
+                - generic [ref=e521]:
+                  - generic [ref=e522]:
+                    - heading "Dinner" [level=3] [ref=e523]
+                    - generic [ref=e524]: 7:00 PM
+                  - paragraph [ref=e525]: Grilled salmon, vegetables, water
+                  - generic [ref=e526]:
+                    - img [ref=e527]
+                    - generic [ref=e530]: 16 oz water
+          - generic [ref=e531]:
+            - paragraph [ref=e533]: Aug 28, 2025
+            - generic [ref=e535]:
+              - generic [ref=e536]:
+                - img [ref=e539]
+                - generic [ref=e542]:
+                  - generic [ref=e543]:
+                    - heading "Breakfast" [level=3] [ref=e544]
+                    - generic [ref=e545]: 8:00 AM
+                  - paragraph [ref=e546]: Oatmeal with berries, coffee
+                  - generic [ref=e547]:
+                    - img [ref=e548]
+                    - generic [ref=e551]: 16 oz water
+              - generic [ref=e552]:
+                - img [ref=e555]
+                - generic [ref=e559]:
+                  - generic [ref=e560]:
+                    - heading "Water" [level=3] [ref=e561]
+                    - generic [ref=e562]: 10:30 AM
+                  - paragraph [ref=e563]: 32 oz
+                  - generic [ref=e564]:
+                    - img [ref=e565]
+                    - generic [ref=e568]: 32 oz water
+              - generic [ref=e569]:
+                - img [ref=e572]
+                - generic [ref=e576]:
+                  - generic [ref=e577]:
+                    - heading "Lunch" [level=3] [ref=e578]
+                    - generic [ref=e579]: 12:30 PM
+                  - paragraph [ref=e580]: Salad with chicken, sparkling water
+                  - generic [ref=e581]:
+                    - img [ref=e582]
+                    - generic [ref=e585]: 12 oz water
+              - generic [ref=e586]:
+                - img [ref=e589]
+                - generic [ref=e592]:
+                  - generic [ref=e593]:
+                    - heading "Afternoon Snack" [level=3] [ref=e594]
+                    - generic [ref=e595]: 3:00 PM
+                  - paragraph [ref=e596]: Apple and almonds
+              - generic [ref=e597]:
+                - img [ref=e600]
+                - generic [ref=e604]:
+                  - generic [ref=e605]:
+                    - heading "Dinner" [level=3] [ref=e606]
+                    - generic [ref=e607]: 7:00 PM
+                  - paragraph [ref=e608]: Grilled salmon, vegetables, water
+                  - generic [ref=e609]:
+                    - img [ref=e610]
+                    - generic [ref=e613]: 16 oz water
+          - button "Load more entries..." [ref=e615]
+    - generic [ref=e617]:
+      - link "Timeline" [ref=e618] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e619] [cursor=pointer]:
+          - img [ref=e621] [cursor=pointer]
+          - generic [ref=e624] [cursor=pointer]: Timeline
+      - link "Log Food" [ref=e625] [cursor=pointer]:
+        - /url: /add
+        - generic [ref=e626] [cursor=pointer]:
+          - img [ref=e628] [cursor=pointer]
+          - generic [ref=e629] [cursor=pointer]: Log Food
+      - link "Water" [ref=e630] [cursor=pointer]:
+        - /url: /water
+        - generic [ref=e631] [cursor=pointer]:
+          - img [ref=e633] [cursor=pointer]
+          - generic [ref=e636] [cursor=pointer]: Water
+      - link "Stats" [ref=e637] [cursor=pointer]:
+        - /url: /analytics
+        - generic [ref=e638] [cursor=pointer]:
+          - img [ref=e640] [cursor=pointer]
+          - generic [ref=e642] [cursor=pointer]: Stats
+      - link "Profile" [ref=e643] [cursor=pointer]:
+        - /url: /profile
+        - generic [ref=e644] [cursor=pointer]:
+          - img [ref=e646] [cursor=pointer]
+          - generic [ref=e649] [cursor=pointer]: Profile
+  - iframe [ref=e650]:
+    
+```

@@ -71,6 +71,8 @@ export default {
         pearl: "hsl(var(--pearl))",
         slate: "hsl(var(--slate))",
         charcoal: "hsl(var(--charcoal))",
+        // Brand colors
+        "brand-orange": "hsl(var(--brand-primary))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -83,6 +85,15 @@ export default {
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
+      },
+      spacing: {
+        'safe-area-inset-bottom': 'env(safe-area-inset-bottom)',
+      },
+      padding: {
+        'safe-area-pb': 'env(safe-area-inset-bottom)',
+      },
+      height: {
+        'safe-area-inset-bottom': 'env(safe-area-inset-bottom)',
       },
       keyframes: {
         fadeIn: {

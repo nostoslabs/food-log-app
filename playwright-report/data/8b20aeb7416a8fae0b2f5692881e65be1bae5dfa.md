@@ -1,0 +1,102 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - main [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]:
+          - generic [ref=e8]:
+            - img [ref=e9]
+            - heading "Water Tracker" [level=1] [ref=e12]
+          - paragraph [ref=e13]: Wednesday, September 3, 2025
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - generic:
+              - img
+              - generic [ref=e18]:
+                - paragraph: "48"
+                - paragraph [ref=e19]: oz
+          - generic [ref=e20]:
+            - paragraph [ref=e21]: 48 oz of 128 oz daily goal
+            - generic [ref=e22]:
+              - img [ref=e23]
+              - generic [ref=e27]: 38% Complete
+        - generic [ref=e28]:
+          - heading "Quick Add" [level=2] [ref=e29]
+          - generic [ref=e30]:
+            - button "8 oz" [ref=e31]:
+              - img [ref=e32]
+              - text: 8 oz
+            - button "16 oz" [ref=e35]:
+              - img [ref=e36]
+              - text: 16 oz
+            - button "20 oz" [ref=e39]:
+              - img [ref=e40]
+              - text: 20 oz
+            - button "32 oz" [ref=e43]:
+              - img [ref=e44]
+              - text: 32 oz
+          - generic [ref=e47]:
+            - paragraph [ref=e48]: Custom Amount
+            - generic [ref=e49]:
+              - button [ref=e50]:
+                - img [ref=e51]
+              - generic [ref=e52]:
+                - spinbutton [ref=e53]: "32"
+                - generic [ref=e54]: oz
+              - button [ref=e55]:
+                - img [ref=e56]
+            - button "Add 32 oz" [ref=e57]
+        - generic [ref=e58]:
+          - heading "Today's Entries" [level=2] [ref=e59]
+          - generic [ref=e61]:
+            - img [ref=e63]
+            - generic [ref=e66]:
+              - paragraph [ref=e67]: 16 oz
+              - paragraph [ref=e68]:
+                - img [ref=e69]
+                - text: 2:30 PM
+          - generic [ref=e73]:
+            - img [ref=e75]
+            - generic [ref=e78]:
+              - paragraph [ref=e79]: 32 oz
+              - paragraph [ref=e80]:
+                - img [ref=e81]
+                - text: 12:15 PM
+          - generic [ref=e85]:
+            - img [ref=e87]
+            - generic [ref=e90]:
+              - paragraph [ref=e91]: 16 oz
+              - paragraph [ref=e92]:
+                - img [ref=e93]
+                - text: 9:00 AM
+    - generic [ref=e97]:
+      - link "Timeline" [ref=e98] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e99] [cursor=pointer]:
+          - img [ref=e101] [cursor=pointer]
+          - generic [ref=e104] [cursor=pointer]: Timeline
+      - link "Log Food" [ref=e105] [cursor=pointer]:
+        - /url: /add
+        - generic [ref=e106] [cursor=pointer]:
+          - img [ref=e108] [cursor=pointer]
+          - generic [ref=e109] [cursor=pointer]: Log Food
+      - link "Water" [ref=e110] [cursor=pointer]:
+        - /url: /water
+        - generic [ref=e111] [cursor=pointer]:
+          - img [ref=e113] [cursor=pointer]
+          - generic [ref=e116] [cursor=pointer]: Water
+      - link "Stats" [ref=e117] [cursor=pointer]:
+        - /url: /analytics
+        - generic [ref=e118] [cursor=pointer]:
+          - img [ref=e120] [cursor=pointer]
+          - generic [ref=e122] [cursor=pointer]: Stats
+      - link "Profile" [ref=e123] [cursor=pointer]:
+        - /url: /profile
+        - generic [ref=e124] [cursor=pointer]:
+          - img [ref=e126] [cursor=pointer]
+          - generic [ref=e129] [cursor=pointer]: Profile
+  - iframe [ref=e130]:
+    
+```

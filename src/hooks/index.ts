@@ -6,4 +6,3 @@ export { useFoodLog } from './useFoodLog';
 
 // Utility hooks
 export { useDateNavigation } from './useDateNavigation';
-export { useExport } from './useExport';

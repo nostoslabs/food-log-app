@@ -5,10 +5,17 @@ import { Analytics } from '@vercel/analytics/react';
 import { LogOut, User, Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import AuthForm from './components/auth/AuthForm';
+import { BottomTabs } from './components';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// Pages
+import TimelinePage from './pages/TimelinePage';
+import AddFoodPage from './pages/AddFoodPage';
+import WaterPage from './pages/WaterPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import ProfilePage from './pages/ProfilePage';
 import FoodLogPage from './pages/FoodLogPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import Footer from './components/Footer';
-import ErrorBoundary from './components/ErrorBoundary';
 
 const AppContent: React.FC = () => {
   const { user, loading, signOut } = useAuth();
@@ -35,10 +42,14 @@ const AppContent: React.FC = () => {
     );
   }
 
+  // Check if we're on a route that should show the top navigation
+  const showTopNavigation = location.pathname === '/legacy' || location.pathname === '/privacy';
+  const showBottomTabs = !showTopNavigation;
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Navigation Bar - only show on main page */}
-      {location.pathname === '/' && (
+      {/* Legacy Navigation Bar - only show on legacy and privacy pages */}
+      {showTopNavigation && (
         <nav className="gradient-header">
           <div className="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center relative z-10">
             <div className="flex items-center gap-4">
@@ -96,13 +107,18 @@ const AppContent: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1">
         <Routes>
-          <Route path="/" element={<FoodLogPage />} />
+          <Route path="/" element={<TimelinePage />} />
+          <Route path="/add" element={<AddFoodPage />} />
+          <Route path="/water" element={<WaterPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/legacy" element={<FoodLogPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
       </main>
 
-      {/* Footer */}
-      <Footer />
+      {/* Bottom Tab Navigation */}
+      {showBottomTabs && <BottomTabs />}
 
       {/* Auth Modal */}
       <AnimatePresence>
