@@ -75,7 +75,7 @@ const SignInPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <img 
             src="/assets/foodlogger_logo1.png" 
-            alt="FoodLogger" 
+            alt="foodlogger.me" 
             className="w-10 h-10"
           />
           <span className="text-xl font-bold text-gray-900 hidden sm:inline">
@@ -103,13 +103,13 @@ const SignInPage: React.FC = () => {
               <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-orange to-amber-500 flex items-center justify-center shadow-xl">
                 <img 
                   src="/assets/foodlogger_logo1.png" 
-                  alt="FoodLogger" 
+                  alt="foodlogger.me" 
                   className="w-16 h-16"
                 />
               </div>
             </div>
             <h1 className="text-3xl font-black text-gray-900 mb-2">
-              {isSignUp ? 'Join FoodLogger' : 'Welcome Back'}
+              {isSignUp ? 'Join foodlogger.me' : 'Welcome Back'}
             </h1>
             <p className="text-gray-600 text-lg">
               {isSignUp 

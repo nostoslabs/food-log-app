@@ -1,8 +1,8 @@
-# FoodLogger.me Development Roadmap
+# foodlogger.me Development Roadmap
 
 *Last Updated: January 2025*
 
-This document outlines the development priorities for FoodLogger.me, organized by implementation phases from MVP (Most Viable Product) through long-term vision.
+This document outlines the development priorities for foodlogger.me, organized by implementation phases from MVP (Most Viable Product) through long-term vision.
 
 ## 🚧 Currently Unfinished Features
 

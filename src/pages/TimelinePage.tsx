@@ -1,70 +1,24 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, subDays } from 'date-fns';
-import { RefreshCw, Calendar } from 'lucide-react';
-import { useDateNavigation } from '../hooks';
+import { format } from 'date-fns';
+import { RefreshCw, Calendar, Loader2 } from 'lucide-react';
+import { useDateNavigation, useTimelineData } from '../hooks';
 import { TimelineEntry } from '../components/timeline/TimelineEntry';
 
 const TimelinePage: React.FC = () => {
   const { currentDate } = useDateNavigation();
   const [refreshing, setRefreshing] = useState(false);
-
-  // Mock data - we'll replace this with real data from hooks
-  const mockTimelineData = useMemo(() => {
-    const entries = [];
-    for (let i = 0; i < 7; i++) {
-      const date = subDays(currentDate, i);
-      entries.push({
-        id: `entry-${i}`,
-        date: format(date, 'yyyy-MM-dd'),
-        displayDate: format(date, 'MMM d, yyyy'),
-        entries: [
-          {
-            time: '8:00 AM',
-            type: 'breakfast' as const,
-            title: 'Breakfast',
-            content: 'Oatmeal with berries, coffee',
-            waterIntake: 16,
-          },
-          {
-            time: '10:30 AM',
-            type: 'water' as const,
-            title: 'Water',
-            content: '32 oz',
-            waterIntake: 32,
-          },
-          {
-            time: '12:30 PM',
-            type: 'lunch' as const,
-            title: 'Lunch',
-            content: 'Salad with chicken, sparkling water',
-            waterIntake: 12,
-          },
-          {
-            time: '3:00 PM',
-            type: 'snack' as const,
-            title: 'Afternoon Snack',
-            content: 'Apple and almonds',
-            waterIntake: 0,
-          },
-          {
-            time: '7:00 PM',
-            type: 'dinner' as const,
-            title: 'Dinner',
-            content: 'Grilled salmon, vegetables, water',
-            waterIntake: 16,
-          },
-        ],
-      });
-    }
-    return entries;
-  }, [currentDate]);
+  const { timelineData, loading, error, refreshTimelineData, getDaySummary } = useTimelineData(7);
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    // Simulate refresh
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setRefreshing(false);
+    try {
+      await refreshTimelineData();
+    } catch (err) {
+      console.error('Failed to refresh timeline:', err);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handlePullToRefresh = (e: React.TouchEvent) => {
@@ -115,76 +69,111 @@ const TimelinePage: React.FC = () => {
       >
         <h2 className="text-sm font-semibold text-gray-600 mb-2">Today's Summary</h2>
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-brand-orange">3</p>
-            <p className="text-xs text-gray-500">Meals</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-blue-500">76</p>
-            <p className="text-xs text-gray-500">oz Water</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-green-500">2</p>
-            <p className="text-xs text-gray-500">Snacks</p>
-          </div>
+          {(() => {
+            const todaySummary = getDaySummary(currentDate);
+            return (
+              <>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-brand-orange">{todaySummary.meals}</p>
+                  <p className="text-xs text-gray-500">Meals</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-blue-500">{todaySummary.waterIntake}</p>
+                  <p className="text-xs text-gray-500">oz Water</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-500">{todaySummary.snacks}</p>
+                  <p className="text-xs text-gray-500">Snacks</p>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </motion.div>
 
-      {/* Timeline */}
-      <div 
-        className="flex-1 px-4 space-y-4"
-        onTouchMove={handlePullToRefresh}
-      >
-        <AnimatePresence mode="popLayout">
-          {mockTimelineData.map((dayData, dayIndex) => (
-            <motion.div
-              key={dayData.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ delay: dayIndex * 0.05 }}
-            >
-              {/* Date Header */}
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-px bg-gray-200 flex-shrink-0" />
-                <p className="text-sm font-semibold text-gray-600 whitespace-nowrap">
-                  {dayData.displayDate}
-                </p>
-                <div className="w-full h-px bg-gray-200" />
-              </div>
-
-              {/* Day's Entries */}
-              <div className="space-y-3 mb-6">
-                {dayData.entries.map((entry, entryIndex) => (
-                  <TimelineEntry
-                    key={`${dayData.id}-${entryIndex}`}
-                    time={entry.time}
-                    type={entry.type}
-                    title={entry.title}
-                    content={entry.content}
-                    waterIntake={entry.waterIntake}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {/* Load More Indicator */}
-        <motion.div 
-          className="flex items-center justify-center py-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+      {/* Error Message */}
+      {error && (
+        <motion.div
+          className="mx-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
         >
-          <button 
-            className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-            onClick={() => {/* Load more logic */}}
-          >
-            Load more entries...
-          </button>
+          <span className="text-red-800 text-sm font-medium">{error}</span>
         </motion.div>
-      </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-8">
+          <div className="flex items-center gap-3 text-gray-500">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span className="text-sm font-medium">Loading your timeline...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Timeline */}
+      {!loading && (
+        <div 
+          className="flex-1 px-4 space-y-4"
+          onTouchMove={handlePullToRefresh}
+        >
+          {timelineData.length === 0 ? (
+            <motion.div 
+              className="text-center py-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No Timeline Data</h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Start logging your meals and activities to see them here!
+              </p>
+              <button
+                onClick={handleRefresh}
+                className="text-brand-orange hover:text-red-600 font-medium text-sm transition-colors"
+              >
+                Refresh Timeline
+              </button>
+            </motion.div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {timelineData.map((dayData, dayIndex) => (
+                <motion.div
+                  key={dayData.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ delay: dayIndex * 0.05 }}
+                >
+                  {/* Date Header */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-12 h-px bg-gray-200 flex-shrink-0" />
+                    <p className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+                      {dayData.displayDate}
+                    </p>
+                    <div className="w-full h-px bg-gray-200" />
+                  </div>
+
+                  {/* Day's Entries */}
+                  <div className="space-y-3 mb-6">
+                    {dayData.entries.map((entry, entryIndex) => (
+                      <TimelineEntry
+                        key={`${dayData.id}-${entryIndex}`}
+                        time={entry.time}
+                        type={entry.type}
+                        title={entry.title}
+                        content={entry.content}
+                        waterIntake={entry.waterIntake}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -9,7 +9,7 @@ const FirebaseNotConfigured: React.FC = () => {
         </div>
         <h1 className="text-2xl font-bold text-foreground mb-4">Firebase Not Configured</h1>
         <p className="text-muted-foreground mb-6">
-          FoodLogger.me needs Firebase to be configured to work properly. 
+          foodlogger.me needs Firebase to be configured to work properly. 
         </p>
         <div className="bg-muted/50 rounded-lg p-4 text-left text-sm">
           <h3 className="font-semibold mb-2">Setup Required:</h3>

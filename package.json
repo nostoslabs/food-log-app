@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "FoodLogger.me - A comprehensive food logging application for tracking daily nutrition and health metrics",
+  "description": "foodlogger.me - A comprehensive food logging application for tracking daily nutrition and health metrics",
   "keywords": [
     "food",
     "nutrition",

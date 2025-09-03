@@ -72,7 +72,7 @@ const FoodLogPage: React.FC = () => {
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r from-emerald to-sapphire flex items-center justify-center">
                   <Calendar className="w-4 h-4 md:w-6 md:h-6 text-white" />
                 </div>
-                <h1 className="text-xl md:text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">FoodLogger.me</h1>
+                <h1 className="text-xl md:text-3xl font-black bg-gradient-to-r from-emerald to-sapphire bg-clip-text text-transparent">foodlogger.me</h1>
               </div>
               <p className="text-slate text-sm md:text-lg font-semibold mb-2">Your diet may be the key to better health</p>
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-3 md:px-4 py-2 md:py-3 mb-2 md:mb-4">
