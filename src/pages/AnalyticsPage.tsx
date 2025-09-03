@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Droplets } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar } from 'lucide-react';
 
 const AnalyticsPage: React.FC = () => {
   return (

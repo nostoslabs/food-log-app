@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Settings, Target, FileText, LogOut, ArrowRight, Sparkles } from 'lucide-react';
+import { User, Settings, Target, FileText, LogOut, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import AuthForm from '../components/auth/AuthForm';
 

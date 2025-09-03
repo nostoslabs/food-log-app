@@ -1,14 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, subDays, addDays } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { RefreshCw, Calendar } from 'lucide-react';
-import { useAuth, useDateNavigation } from '../hooks';
+import { useDateNavigation } from '../hooks';
 import { TimelineEntry } from '../components/timeline/TimelineEntry';
-import type { FoodLog } from '../types';
 
 const TimelinePage: React.FC = () => {
-  const { user } = useAuth();
-  const { currentDate, changeDate } = useDateNavigation();
+  const { currentDate } = useDateNavigation();
   const [refreshing, setRefreshing] = useState(false);
 
   // Mock data - we'll replace this with real data from hooks
