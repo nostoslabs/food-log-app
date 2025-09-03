@@ -15,6 +15,7 @@ import WaterPage from './pages/WaterPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import ProfilePage from './pages/ProfilePage';
 import FoodLogPage from './pages/FoodLogPage';
+import SignInPage from './pages/SignInPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const AppContent: React.FC = () => {
@@ -42,9 +43,10 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Check if we're on a route that should show the top navigation
+  // Check if we're on a route that should show the top navigation or hide bottom tabs
   const showTopNavigation = location.pathname === '/legacy' || location.pathname === '/privacy';
-  const showBottomTabs = !showTopNavigation;
+  const hideBottomTabs = showTopNavigation || location.pathname === '/signin';
+  const showBottomTabs = !hideBottomTabs;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -112,6 +114,7 @@ const AppContent: React.FC = () => {
           <Route path="/water" element={<WaterPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/signin" element={<SignInPage />} />
           <Route path="/legacy" element={<FoodLogPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>

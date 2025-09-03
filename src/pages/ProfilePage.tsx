@@ -1,10 +1,13 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { User, Settings, Target, FileText, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Settings, Target, FileText, LogOut, ArrowRight, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import AuthForm from '../components/auth/AuthForm';
 
 const ProfilePage: React.FC = () => {
   const { user, signOut } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -113,11 +116,110 @@ const ProfilePage: React.FC = () => {
         </motion.div>
       )}
 
+      {/* Sign In CTA for non-authenticated users */}
       {!user && (
-        <div className="flex-1 flex items-center justify-center text-gray-500">
-          <p>Please sign in to access profile features</p>
-        </div>
+        <motion.div 
+          className="m-4 space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-brand-orange to-amber-500 rounded-2xl p-8 text-white text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-10 translate-x-10" />
+            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-8 -translate-x-8" />
+            <div className="relative z-10">
+              <Sparkles className="w-12 h-12 mx-auto mb-4 text-white" />
+              <h2 className="text-2xl font-bold mb-2">Unlock Your Full Experience</h2>
+              <p className="text-white/90 mb-6">
+                Sign in to sync your data, track progress across devices, and access premium features
+              </p>
+              
+              {/* CTA Buttons */}
+              <div className="space-y-3">
+                <Link 
+                  to="/signin"
+                  className="block w-full bg-white text-brand-orange py-3 px-6 rounded-xl font-bold hover:bg-white/90 transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  Get Started - It's Free!
+                </Link>
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="w-full bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white py-3 px-6 rounded-xl font-semibold hover:bg-white/30 transition-all hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  Quick Sign In
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { icon: '☁️', title: 'Cloud Sync', desc: 'Access your data anywhere' },
+              { icon: '📊', title: 'Advanced Analytics', desc: 'Track your progress over time' },
+              { icon: '🔒', title: 'Secure Backup', desc: 'Never lose your food logs' },
+              { icon: '✨', title: 'Premium Features', desc: 'Export, goals, and more' }
+            ].map((benefit, index) => (
+              <motion.div
+                key={benefit.title}
+                className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+              >
+                <div className="text-2xl mb-2">{benefit.icon}</div>
+                <h3 className="font-semibold text-gray-900 text-sm">{benefit.title}</h3>
+                <p className="text-xs text-gray-600">{benefit.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Local Storage Notice */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 text-sm">ℹ️</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-blue-900 text-sm mb-1">No Account Required</h4>
+                <p className="text-blue-800 text-xs leading-relaxed">
+                  You can continue using the app without signing in. Your data will be stored locally on this device only.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       )}
+
+      {/* Auth Modal */}
+      <AnimatePresence>
+        {showAuthModal && !user && (
+          <motion.div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div 
+              className="max-w-md w-full relative"
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <button
+                onClick={() => setShowAuthModal(false)}
+                className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-gray-800 hover:shadow-xl transition-all z-10 text-xl font-bold"
+              >
+                ×
+              </button>
+              <AuthForm />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
