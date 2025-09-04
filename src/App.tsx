@@ -10,10 +10,11 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import TimelinePage from './pages/TimelinePage';
-import AddFoodPage from './pages/AddFoodPage';
+import LogPage from './pages/LogPage';
 import WaterPage from './pages/WaterPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
 import FoodLogPage from './pages/FoodLogPage';
 import SignInPage from './pages/SignInPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -110,10 +111,11 @@ const AppContent: React.FC = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<TimelinePage />} />
-          <Route path="/add" element={<AddFoodPage />} />
+          <Route path="/add" element={<LogPage />} />
           <Route path="/water" element={<WaterPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/legacy" element={<FoodLogPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -18,7 +18,7 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   { path: '/', icon: Clock, label: 'Timeline' },
-  { path: '/add', icon: Plus, label: 'Log Food' },
+  { path: '/add', icon: Plus, label: 'Log' },
   { path: '/water', icon: Droplets, label: 'Water' },
   { path: '/analytics', icon: BarChart3, label: 'Stats' },
   { path: '/profile', icon: User, label: 'Profile' },

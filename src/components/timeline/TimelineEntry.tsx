@@ -14,6 +14,7 @@ interface TimelineEntryProps {
   title: string;
   content: string;
   waterIntake?: number;
+  onClick?: () => void;
 }
 
 const getIconAndColor = (type: TimelineEntryProps['type']) => {
@@ -42,7 +43,8 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = ({
   type,
   title,
   content,
-  waterIntake = 0
+  waterIntake = 0,
+  onClick
 }) => {
   const { icon: Icon, color } = getIconAndColor(type);
 
@@ -69,9 +71,13 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = ({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <motion.div 
-          className="bg-white rounded-lg border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow"
+          className={`bg-white rounded-lg border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow ${
+            onClick ? 'cursor-pointer hover:border-blue-200' : ''
+          }`}
           whileHover={{ y: -2 }}
+          whileTap={onClick ? { scale: 0.98 } : undefined}
           transition={{ duration: 0.2 }}
+          onClick={onClick}
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-2">
@@ -89,6 +95,13 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = ({
               <span className="text-xs text-blue-600 font-medium">
                 {waterIntake} oz water
               </span>
+            </div>
+          )}
+
+          {/* Click indicator */}
+          {onClick && (
+            <div className="absolute top-2 right-2 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-xs">✏️</span>
             </div>
           )}
         </motion.div>

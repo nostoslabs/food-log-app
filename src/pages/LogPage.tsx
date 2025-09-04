@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Utensils, Cookie, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Plus, Utensils, Cookie, Loader2, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, Activity, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFoodLog, useDateNavigation } from '../hooks';
-import { QuickMealEntry, QuickSnackEntry } from '../components';
+import { QuickMealEntry, QuickSnackEntry, QuickHealthMetricsEntry, QuickSleepEntry } from '../components';
 import type { MealData, SnackData } from '../types';
 
-const AddFoodPage: React.FC = () => {
-  const { currentDate } = useDateNavigation();
+const LogPage: React.FC = () => {
+  const { currentDate, changeDate, goToToday } = useDateNavigation();
   const { 
     foodLog, 
     loading, 
     error, 
     updateMeal, 
-    updateSnack 
+    updateSnack,
+    updateHealthMetric
   } = useFoodLog(currentDate);
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -42,6 +43,31 @@ const AddFoodPage: React.FC = () => {
       setTimeout(() => setSaveSuccess(null), 3000);
     } catch (error) {
       console.error('Failed to save snack:', error);
+    }
+  };
+
+  const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string; dailyWaterIntake: string }) => {
+    try {
+      // Update each health metric field
+      Object.entries(healthData).forEach(([field, value]) => {
+        updateHealthMetric(field as 'bowelMovements' | 'exercise' | 'dailyWaterIntake', value);
+      });
+      setSaveSuccess('Health metrics saved successfully!');
+      setTimeout(() => setSaveSuccess(null), 3000);
+    } catch (error) {
+      console.error('Failed to save health metrics:', error);
+    }
+  };
+
+  const handleSleepSave = async (sleepData: { sleepQuality: number; sleepHours: string }) => {
+    try {
+      // Update sleep fields
+      updateHealthMetric('sleepQuality', sleepData.sleepQuality);
+      updateHealthMetric('sleepHours', sleepData.sleepHours);
+      setSaveSuccess('Sleep data saved successfully!');
+      setTimeout(() => setSaveSuccess(null), 3000);
+    } catch (error) {
+      console.error('Failed to save sleep data:', error);
     }
   };
 
@@ -102,7 +128,7 @@ const AddFoodPage: React.FC = () => {
       <div className="min-h-screen bg-background flex items-center justify-center pb-20">
         <div className="flex items-center gap-3 text-muted-foreground">
           <Loader2 className="w-6 h-6 animate-spin text-brand-orange" />
-          <span className="text-lg font-medium">Loading your food log...</span>
+          <span className="text-lg font-medium">Loading your log...</span>
         </div>
       </div>
     );
@@ -118,19 +144,10 @@ const AddFoodPage: React.FC = () => {
         transition={{ duration: 0.3 }}
       >
         <div className="px-4 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Plus className="w-6 h-6" />
-              <div>
-                <h1 className="text-xl font-bold">Log Food</h1>
-                <p className="text-white/80 text-sm mt-1">
-                  {new Date(currentDate).toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
-              </div>
+              <h1 className="text-xl font-bold">Log</h1>
             </div>
             <Link 
               to="/legacy"
@@ -138,6 +155,48 @@ const AddFoodPage: React.FC = () => {
             >
               Full Form
             </Link>
+          </div>
+          
+          {/* Date Navigation */}
+          <div className="flex items-center justify-between">
+            <motion.button 
+              onClick={() => changeDate(-1)}
+              className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </motion.button>
+            
+            <div className="flex-1 text-center px-4">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Calendar className="w-4 h-4" />
+                <p className="text-white font-semibold">
+                  {new Date(currentDate).toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </p>
+              </div>
+              
+              {/* Today button if not today */}
+              {new Date(currentDate).toDateString() !== new Date().toDateString() && (
+                <button
+                  onClick={goToToday}
+                  className="text-xs text-white/80 hover:text-white bg-white/20 px-2 py-1 rounded-full transition-colors"
+                >
+                  Today
+                </button>
+              )}
+            </div>
+            
+            <motion.button 
+              onClick={() => changeDate(1)}
+              className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronRight className="w-5 h-5" />
+            </motion.button>
           </div>
         </div>
       </motion.div>
@@ -255,6 +314,86 @@ const AddFoodPage: React.FC = () => {
         </div>
       </motion.div>
 
+      {/* Health Metrics Section */}
+      <motion.div 
+        className="m-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <Activity className="w-5 h-5" />
+          Health Metrics
+        </h2>
+        <motion.button
+          onClick={() => setActiveModal('healthMetrics')}
+          className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center shadow-lg">
+            <Activity className="w-7 h-7 text-white" />
+          </div>
+          <div className="flex-1 text-left">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900">Health Tracking</h3>
+              {(foodLog.bowelMovements || foodLog.exercise || foodLog.dailyWaterIntake) && (
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              )}
+            </div>
+            <p className="text-sm text-gray-500">
+              {(foodLog.bowelMovements || foodLog.exercise || foodLog.dailyWaterIntake) 
+                ? 'Logged - tap to edit' 
+                : 'Add bowel movements, exercise, water intake'}
+            </p>
+          </div>
+          <Plus className="w-5 h-5 text-gray-400" />
+        </motion.button>
+      </motion.div>
+
+      {/* Sleep Section */}
+      <motion.div 
+        className="m-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
+          <Moon className="w-5 h-5" />
+          Sleep
+        </h2>
+        <motion.button
+          onClick={() => setActiveModal('sleep')}
+          className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-lg">
+            <Moon className="w-7 h-7 text-white" />
+          </div>
+          <div className="flex-1 text-left">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900">Sleep Tracking</h3>
+              {(foodLog.sleepQuality > 0 || foodLog.sleepHours) && (
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              )}
+            </div>
+            <p className="text-sm text-gray-500">
+              {(foodLog.sleepQuality > 0 || foodLog.sleepHours)
+                ? 'Logged - tap to edit'
+                : 'Add sleep quality and hours'}
+            </p>
+          </div>
+          <Plus className="w-5 h-5 text-gray-400" />
+        </motion.button>
+      </motion.div>
+
       {/* Modals */}
       <AnimatePresence>
         {/* Meal Modals */}
@@ -276,9 +415,34 @@ const AddFoodPage: React.FC = () => {
             onClose={() => setActiveModal(null)}
           />
         )}
+
+        {/* Health Metrics Modal */}
+        {activeModal === 'healthMetrics' && (
+          <QuickHealthMetricsEntry
+            initialData={{
+              bowelMovements: foodLog.bowelMovements || '',
+              exercise: foodLog.exercise || '',
+              dailyWaterIntake: foodLog.dailyWaterIntake || ''
+            }}
+            onSave={handleHealthMetricsSave}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        {/* Sleep Modal */}
+        {activeModal === 'sleep' && (
+          <QuickSleepEntry
+            initialData={{
+              sleepQuality: foodLog.sleepQuality || 0,
+              sleepHours: foodLog.sleepHours || ''
+            }}
+            onSave={handleSleepSave}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
       </AnimatePresence>
     </div>
   );
 };
 
-export default AddFoodPage;
+export default LogPage;

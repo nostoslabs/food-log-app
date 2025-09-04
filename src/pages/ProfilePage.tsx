@@ -66,29 +66,59 @@ const ProfilePage: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        {[
-          { icon: Settings, label: 'Settings', subtitle: 'App preferences and defaults' },
-          { icon: Target, label: 'Goals', subtitle: 'Set your daily targets' },
-          { icon: FileText, label: 'Export Data', subtitle: 'Download your food logs' },
-        ].map((item, index) => (
-          <motion.button
-            key={item.label}
-            className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 + index * 0.05 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-              <item.icon className="w-5 h-5 text-gray-600" />
-            </div>
-            <div className="flex-1 text-left">
-              <h3 className="font-medium text-gray-900">{item.label}</h3>
-              <p className="text-sm text-gray-500">{item.subtitle}</p>
-            </div>
-          </motion.button>
-        ))}
+{[
+          { icon: Settings, label: 'Settings', subtitle: 'App preferences and defaults', path: '/settings', available: true },
+          { icon: Target, label: 'Goals', subtitle: 'Set your daily targets', path: '#', available: false },
+          { icon: FileText, label: 'Export Data', subtitle: 'Download your food logs', path: '#', available: false },
+        ].map((item, index) => {
+          const Component = item.available ? Link : 'button';
+          const props = item.available 
+            ? { to: item.path } 
+            : { 
+                onClick: () => {}, 
+                disabled: true,
+                className: "w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 opacity-50 cursor-not-allowed"
+              };
+          
+          return (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 + index * 0.05 }}
+            >
+              <Component
+                {...(item.available ? { to: item.path } : {})}
+                className={item.available 
+                  ? "block w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105" 
+                  : "w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 opacity-50 cursor-not-allowed"
+                }
+                {...(!item.available ? { onClick: (e: React.MouseEvent) => e.preventDefault() } : {})}
+              >
+                <motion.div 
+                  className="flex items-center gap-4 w-full"
+                  whileHover={item.available ? { scale: 1.02 } : {}}
+                  whileTap={item.available ? { scale: 0.98 } : {}}
+                >
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-gray-600" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <h3 className="font-medium text-gray-900 flex items-center gap-2">
+                      {item.label}
+                      {!item.available && (
+                        <span className="text-xs px-2 py-1 bg-amber-100 text-amber-600 rounded-full font-semibold">
+                          Soon
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-sm text-gray-500">{item.subtitle}</p>
+                  </div>
+                </motion.div>
+              </Component>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
       {/* Sign Out */}

@@ -5,6 +5,7 @@ export { useAuth, AuthProvider } from './useAuth';
 export { useFoodLog } from './useFoodLog';
 export { useTimelineData } from './useTimelineData';
 export { useAnalytics } from './useAnalytics';
+export { usePreferences } from './usePreferences';
 
 // Utility hooks
 export { useDateNavigation } from './useDateNavigation';

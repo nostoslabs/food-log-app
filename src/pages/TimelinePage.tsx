@@ -2,13 +2,33 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { RefreshCw, Calendar, Loader2 } from 'lucide-react';
-import { useDateNavigation, useTimelineData } from '../hooks';
+import { useDateNavigation, useTimelineData, useFoodLog } from '../hooks';
 import { TimelineEntry } from '../components/timeline/TimelineEntry';
+import { QuickMealEntry, QuickSnackEntry, QuickHealthMetricsEntry, QuickSleepEntry } from '../components';
+import type { MealData, SnackData } from '../types';
+
+interface ModalState {
+  type: string;
+  date: string;
+  entryType: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'water' | 'exercise' | 'sleep';
+  snackType?: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack';
+}
 
 const TimelinePage: React.FC = () => {
   const { currentDate } = useDateNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const [activeModal, setActiveModal] = useState<ModalState | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const { timelineData, loading, error, refreshTimelineData, getDaySummary } = useTimelineData(7);
+  
+  // Use food log hook for the selected modal date
+  const modalDate = activeModal ? new Date(activeModal.date) : currentDate;
+  const { 
+    foodLog, 
+    updateMeal, 
+    updateSnack, 
+    updateHealthMetric 
+  } = useFoodLog(modalDate);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -25,6 +45,96 @@ const TimelinePage: React.FC = () => {
     // Simple pull-to-refresh logic
     if (e.touches[0]?.clientY > 100) {
       handleRefresh();
+    }
+  };
+
+  // Map timeline entry title to snack type
+  const getSnackTypeFromTitle = (title: string): 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack' => {
+    if (title.includes('Mid-Morning')) return 'midMorningSnack';
+    if (title.includes('Afternoon')) return 'midDaySnack';
+    return 'nighttimeSnack'; // Evening snack
+  };
+
+  const handleTimelineEntryClick = (entry: any, dayDate: string) => {
+    let modalType = entry.type;
+    let snackType: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack' | undefined;
+
+    // Handle snack types - need to determine which specific snack
+    if (entry.type === 'snack') {
+      snackType = getSnackTypeFromTitle(entry.title);
+      modalType = snackType;
+    }
+    
+    // Handle health metrics
+    if (entry.type === 'water' || entry.type === 'exercise') {
+      modalType = 'healthMetrics';
+    }
+
+    setActiveModal({
+      type: modalType,
+      date: dayDate,
+      entryType: entry.type,
+      snackType
+    });
+  };
+
+  // Save handlers
+  const handleMealSave = async (mealType: 'breakfast' | 'lunch' | 'dinner', mealData: MealData) => {
+    try {
+      Object.entries(mealData).forEach(([field, value]) => {
+        updateMeal(mealType, field as keyof MealData, value as string);
+      });
+      setSaveSuccess(`${mealType.charAt(0).toUpperCase() + mealType.slice(1)} updated!`);
+      setTimeout(() => {
+        setSaveSuccess(null);
+        refreshTimelineData(); // Refresh to show updated data
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save meal:', error);
+    }
+  };
+
+  const handleSnackSave = async (snackType: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack', snackData: SnackData) => {
+    try {
+      Object.entries(snackData).forEach(([field, value]) => {
+        updateSnack(snackType, field as keyof SnackData, value as string);
+      });
+      setSaveSuccess('Snack updated!');
+      setTimeout(() => {
+        setSaveSuccess(null);
+        refreshTimelineData();
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save snack:', error);
+    }
+  };
+
+  const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string; dailyWaterIntake: string }) => {
+    try {
+      Object.entries(healthData).forEach(([field, value]) => {
+        updateHealthMetric(field as 'bowelMovements' | 'exercise' | 'dailyWaterIntake', value);
+      });
+      setSaveSuccess('Health metrics updated!');
+      setTimeout(() => {
+        setSaveSuccess(null);
+        refreshTimelineData();
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save health metrics:', error);
+    }
+  };
+
+  const handleSleepSave = async (sleepData: { sleepQuality: number; sleepHours: string }) => {
+    try {
+      updateHealthMetric('sleepQuality', sleepData.sleepQuality);
+      updateHealthMetric('sleepHours', sleepData.sleepHours);
+      setSaveSuccess('Sleep data updated!');
+      setTimeout(() => {
+        setSaveSuccess(null);
+        refreshTimelineData();
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to save sleep data:', error);
     }
   };
 
@@ -165,6 +275,7 @@ const TimelinePage: React.FC = () => {
                         title={entry.title}
                         content={entry.content}
                         waterIntake={entry.waterIntake}
+                        onClick={() => handleTimelineEntryClick(entry, dayData.date)}
                       />
                     ))}
                   </div>
@@ -174,6 +285,68 @@ const TimelinePage: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* Success Message */}
+      <AnimatePresence>
+        {saveSuccess && (
+          <motion.div
+            className="fixed top-4 left-4 right-4 z-50 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <span className="text-green-800 text-sm font-medium">{saveSuccess}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modals */}
+      <AnimatePresence>
+        {/* Meal Modals */}
+        {activeModal && ['breakfast', 'lunch', 'dinner'].includes(activeModal.type) && (
+          <QuickMealEntry
+            mealType={activeModal.type as 'breakfast' | 'lunch' | 'dinner'}
+            initialData={foodLog[activeModal.type as 'breakfast' | 'lunch' | 'dinner']}
+            onSave={(mealData) => handleMealSave(activeModal.type as 'breakfast' | 'lunch' | 'dinner', mealData)}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        {/* Snack Modals */}
+        {activeModal && activeModal.snackType && ['midMorningSnack', 'midDaySnack', 'nighttimeSnack'].includes(activeModal.snackType) && (
+          <QuickSnackEntry
+            snackType={activeModal.snackType}
+            initialData={foodLog[activeModal.snackType]}
+            onSave={(snackData) => handleSnackSave(activeModal.snackType!, snackData)}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        {/* Health Metrics Modal */}
+        {activeModal && activeModal.type === 'healthMetrics' && (
+          <QuickHealthMetricsEntry
+            initialData={{
+              bowelMovements: foodLog.bowelMovements || '',
+              exercise: foodLog.exercise || '',
+              dailyWaterIntake: foodLog.dailyWaterIntake || ''
+            }}
+            onSave={handleHealthMetricsSave}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+
+        {/* Sleep Modal */}
+        {activeModal && activeModal.type === 'sleep' && (
+          <QuickSleepEntry
+            initialData={{
+              sleepQuality: foodLog.sleepQuality || 0,
+              sleepHours: foodLog.sleepHours || ''
+            }}
+            onSave={handleSleepSave}
+            onClose={() => setActiveModal(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

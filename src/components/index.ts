@@ -9,6 +9,8 @@ export { default as SleepSection } from './food-log/SleepSection';
 export { default as NotesSection } from './food-log/NotesSection';
 export { QuickMealEntry } from './food-log/QuickMealEntry';
 export { QuickSnackEntry } from './food-log/QuickSnackEntry';
+export { QuickHealthMetricsEntry } from './food-log/QuickHealthMetricsEntry';
+export { QuickSleepEntry } from './food-log/QuickSleepEntry';
 
 // Navigation components
 export { default as BottomTabs } from './navigation/BottomTabs';
