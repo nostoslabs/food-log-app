@@ -271,7 +271,36 @@ export class FirestoreService {
       return this.createFoodLog(newLog);
     }
   }
+
+  // Get all food logs (for analytics)
+  async getAllFoodLogs(): Promise<FoodLog[]> {
+    try {
+      const q = query(
+        collection(db, this.COLLECTION_NAME),
+        orderBy('date', 'desc')
+      );
+
+      const querySnapshot = await getDocs(q);
+      const foodLogs: FoodLog[] = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: this.convertTimestamp(data.createdAt),
+          updatedAt: this.convertTimestamp(data.updatedAt)
+        } as FoodLog;
+      });
+
+      return foodLogs;
+    } catch (error) {
+      console.error('Error getting all food logs:', error);
+      return [];
+    }
+  }
 }
 
 // Export a singleton instance
 export const firestoreService = new FirestoreService();
+
+// Export convenience functions for use in hooks
+export const getAllLogs = () => firestoreService.getAllFoodLogs();
