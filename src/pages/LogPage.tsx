@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Utensils, Cookie, Loader2, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, Activity, Moon } from 'lucide-react';
+import { Plus, Utensils, Cookie, Loader2, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, Activity, Moon, Coffee, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFoodLog, useDateNavigation } from '../hooks';
 import { QuickMealEntry, QuickSnackEntry, QuickHealthMetricsEntry, QuickSleepEntry } from '../components';
@@ -75,21 +75,21 @@ const LogPage: React.FC = () => {
     { 
       key: 'breakfast', 
       label: 'Breakfast', 
-      icon: '🌅', 
+      icon: Coffee, 
       color: 'from-amber-400 to-orange-500',
       data: foodLog.breakfast
     },
     { 
       key: 'lunch', 
       label: 'Lunch', 
-      icon: '☀️', 
+      icon: Utensils, 
       color: 'from-green-500 to-emerald-500',
       data: foodLog.lunch
     },
     { 
       key: 'dinner', 
       label: 'Dinner', 
-      icon: '🌆', 
+      icon: Utensils, 
       color: 'from-indigo-500 to-purple-500',
       data: foodLog.dinner
     }
@@ -99,21 +99,21 @@ const LogPage: React.FC = () => {
     { 
       key: 'midMorningSnack', 
       label: 'Mid-Morning', 
-      icon: '🍎', 
+      icon: Zap, 
       color: 'from-green-400 to-teal-500',
       data: foodLog.midMorningSnack
     },
     { 
       key: 'midDaySnack', 
       label: 'Afternoon', 
-      icon: '🥨', 
+      icon: Zap, 
       color: 'from-blue-400 to-indigo-500',
       data: foodLog.midDaySnack
     },
     { 
       key: 'nighttimeSnack', 
       label: 'Evening', 
-      icon: '🍪', 
+      icon: Zap, 
       color: 'from-purple-400 to-pink-500',
       data: foodLog.nighttimeSnack
     }
@@ -252,7 +252,7 @@ const LogPage: React.FC = () => {
               whileTap={{ scale: 0.98 }}
             >
               <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${meal.color} flex items-center justify-center shadow-lg`}>
-                <span className="text-2xl">{meal.icon}</span>
+                <meal.icon className="w-7 h-7 text-white" />
               </div>
               <div className="flex-1 text-left">
                 <div className="flex items-center gap-2">
@@ -295,7 +295,7 @@ const LogPage: React.FC = () => {
               whileTap={{ scale: 0.98 }}
             >
               <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${snack.color} flex items-center justify-center shadow-lg`}>
-                <span className="text-lg">{snack.icon}</span>
+                <snack.icon className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 text-left">
                 <div className="flex items-center gap-2">

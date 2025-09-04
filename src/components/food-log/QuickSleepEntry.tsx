@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Save, Loader2, Moon } from 'lucide-react';
-import { NumberInput } from '../ui';
 
 interface SleepData {
   sleepQuality: number;
@@ -39,26 +38,67 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
     }
   };
 
-  const updateSleepQuality = (rating: number) => {
-    setSleepData(prev => ({ ...prev, sleepQuality: rating }));
-  };
-
   const updateSleepHours = (hours: string) => {
     setSleepData(prev => ({ ...prev, sleepHours: hours }));
   };
 
+  const updateSleepQuality = (quality: number) => {
+    setSleepData(prev => ({ ...prev, sleepQuality: quality }));
+  };
+
   const hasContent = sleepData.sleepQuality > 0 || (sleepData.sleepHours && sleepData.sleepHours.trim() !== '');
 
-  const getSleepQualityLabel = (rating: number) => {
-    const labels = {
-      1: "Very Poor",
-      2: "Poor", 
-      3: "Fair",
-      4: "Good",
-      5: "Excellent"
-    };
-    return labels[rating as keyof typeof labels] || "";
+  const getSleepQualityLabel = (quality: number) => {
+    if (quality === 0) return "";
+    if (quality <= 20) return "Very Poor";
+    if (quality <= 40) return "Poor";
+    if (quality <= 60) return "Fair";
+    if (quality <= 80) return "Good";
+    return "Excellent";
   };
+
+  // Parse sleep hours from string format like "8h 30m" or "8.5"
+  const parseSleepHours = (sleepStr: string) => {
+    if (!sleepStr) return { hours: 8, minutes: 0 };
+    
+    // Check for "Xh Ym" format
+    const hourMinMatch = sleepStr.match(/(\d+)h\s*(\d+)m/);
+    if (hourMinMatch) {
+      return { 
+        hours: parseInt(hourMinMatch[1], 10), 
+        minutes: parseInt(hourMinMatch[2], 10) 
+      };
+    }
+    
+    // Check for decimal format like "8.5"
+    const decimalMatch = sleepStr.match(/^(\d+(?:\.\d+)?)$/);
+    if (decimalMatch) {
+      const totalHours = parseFloat(decimalMatch[1]);
+      const hours = Math.floor(totalHours);
+      const minutes = Math.round((totalHours - hours) * 60);
+      return { hours, minutes };
+    }
+    
+    // Default fallback
+    return { hours: 8, minutes: 0 };
+  };
+
+  const formatSleepHours = (hours: number, minutes: number) => {
+    if (minutes === 0) {
+      return `${hours}h`;
+    }
+    return `${hours}h ${minutes}m`;
+  };
+
+  const initialSleep = parseSleepHours(sleepData.sleepHours);
+  const [sleepHours, setSleepHours] = useState(initialSleep.hours);
+  const [sleepMinutes, setSleepMinutes] = useState(initialSleep.minutes);
+
+  // Update sleepHours string when hours/minutes change
+  React.useEffect(() => {
+    const formattedSleep = formatSleepHours(sleepHours, sleepMinutes);
+    updateSleepHours(formattedSleep);
+  }, [sleepHours, sleepMinutes]);
 
   return (
     <motion.div
@@ -99,55 +139,30 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
         {/* Content */}
         <div className="flex-1 p-6 overflow-y-auto">
           <div className="space-y-6">
-            {/* Sleep Quality Rating */}
+            {/* Sleep Quality Slider */}
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-3">
-                Quality of Sleep
+              <label className="block text-sm font-semibold text-gray-800 mb-4">
+                Sleep Quality: {sleepData.sleepQuality}%
               </label>
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-600">Poor</span>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <motion.button
-                      key={rating}
-                      type="button"
-                      onClick={() => updateSleepQuality(rating)}
-                      className={`relative w-12 h-12 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                        sleepData.sleepQuality === rating
-                          ? 'bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-purple-500 shadow-lg shadow-purple-500/30'
-                          : 'bg-white text-gray-600 border-gray-300 hover:border-purple-400 hover:shadow-md'
-                      }`}
-                      whileHover={{ 
-                        scale: 1.1,
-                        y: -2,
-                        boxShadow: sleepData.sleepQuality === rating 
-                          ? '0 8px 25px rgba(147, 51, 234, 0.4)' 
-                          : '0 4px 15px rgba(0, 0, 0, 0.1)'
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ 
-                        delay: rating * 0.1,
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 20
-                      }}
-                    >
-                      {rating}
-                      {sleepData.sleepQuality === rating && (
-                        <motion.div
-                          className="absolute inset-0 rounded-full bg-white/20"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-                    </motion.button>
-                  ))}
+              
+              <div className="relative">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={sleepData.sleepQuality}
+                  onChange={(e) => updateSleepQuality(parseInt(e.target.value))}
+                  className="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  style={{
+                    background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${sleepData.sleepQuality}%, #e5e7eb ${sleepData.sleepQuality}%, #e5e7eb 100%)`
+                  }}
+                />
+                <div className="flex justify-between text-sm text-gray-500 mt-2">
+                  <span>Poor (0%)</span>
+                  <span>Excellent (100%)</span>
                 </div>
-                <span className="text-sm font-medium text-gray-600">Excellent</span>
               </div>
+              
               {sleepData.sleepQuality > 0 && (
                 <motion.div 
                   className="mt-3 text-center"
@@ -163,15 +178,43 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
               )}
             </div>
 
-            {/* Sleep Hours */}
+            {/* Sleep Duration - Hours and Minutes */}
             <div>
-              <NumberInput
-                label="🛌 Hours of Sleep"
-                value={sleepData.sleepHours}
-                onChange={updateSleepHours}
-                placeholder="e.g., 8.0"
-                min="0"
-              />
+              <label className="block text-sm font-semibold text-gray-800 mb-3">
+                🛌 Sleep Duration
+              </label>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2">Hours</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="24"
+                    value={sleepHours}
+                    onChange={(e) => setSleepHours(parseInt(e.target.value) || 0)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="8"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-2">Minutes</label>
+                  <select
+                    value={sleepMinutes}
+                    onChange={(e) => setSleepMinutes(parseInt(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    {[0, 15, 30, 45].map(min => (
+                      <option key={min} value={min}>{min} min</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              <div className="mt-2 text-sm text-gray-500 text-center">
+                Total: {formatSleepHours(sleepHours, sleepMinutes)}
+              </div>
             </div>
           </div>
         </div>

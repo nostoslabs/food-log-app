@@ -135,8 +135,14 @@ const convertFoodLogToTimelineEntries = (foodLog: FoodLog): TimelineEntryData[] 
   // Add sleep if recorded
   if (foodLog.sleepQuality > 0 || hasContent(foodLog.sleepHours)) {
     const sleepContent = [];
-    if (hasContent(foodLog.sleepHours)) sleepContent.push(`${foodLog.sleepHours} hours`);
-    if (foodLog.sleepQuality > 0) sleepContent.push(`Quality: ${foodLog.sleepQuality}/10`);
+    if (hasContent(foodLog.sleepHours)) sleepContent.push(`${foodLog.sleepHours}`);
+    if (foodLog.sleepQuality > 0) {
+      // Handle both old scale (1-5) and new scale (0-100)
+      const qualityDisplay = foodLog.sleepQuality <= 5 
+        ? `Quality: ${foodLog.sleepQuality}/5` 
+        : `Quality: ${foodLog.sleepQuality}%`;
+      sleepContent.push(qualityDisplay);
+    }
     
     entries.push({
       time: '11:00 PM',
