@@ -4,7 +4,7 @@ import {
   setDoc,
   serverTimestamp
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, isFirebaseConfigured } from './firebase';
 import type { ApiResponse } from '../types';
 
 // User Preferences Types
@@ -45,6 +45,7 @@ export const DEFAULT_PREFERENCES: Omit<UserPreferences, 'id' | 'userId' | 'creat
 
 export class PreferencesService {
   private readonly COLLECTION_NAME = 'userPreferences';
+  private readonly LOCAL_STORAGE_KEY = 'foodlogger_preferences';
 
   // Helper method to convert Firestore timestamps to ISO strings
   private convertTimestamp(timestamp: any): string {
@@ -52,8 +53,80 @@ export class PreferencesService {
     return timestamp.toDate?.()?.toISOString() || timestamp;
   }
 
+  // LocalStorage methods
+  private getPreferencesFromLocalStorage(): UserPreferences | null {
+    try {
+      const stored = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting preferences from localStorage:', error);
+      return null;
+    }
+  }
+
+  private savePreferencesToLocalStorage(preferences: UserPreferences): void {
+    try {
+      localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(preferences));
+    } catch (error) {
+      console.error('Error saving preferences to localStorage:', error);
+    }
+  }
+
   // Get user preferences
   async getUserPreferences(userId: string): Promise<ApiResponse<UserPreferences>> {
+    // If no userId (unauthenticated), use localStorage
+    if (!userId) {
+      const localPrefs = this.getPreferencesFromLocalStorage();
+      if (localPrefs) {
+        return {
+          success: true,
+          data: localPrefs
+        };
+      } else {
+        // Return default preferences for unauthenticated users
+        const defaultPrefs: UserPreferences = {
+          ...DEFAULT_PREFERENCES,
+          userId: 'local',
+          id: 'local',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        this.savePreferencesToLocalStorage(defaultPrefs);
+        return {
+          success: true,
+          data: defaultPrefs
+        };
+      }
+    }
+
+    // For authenticated users, try Firestore if configured
+    if (!isFirebaseConfigured) {
+      // Fall back to localStorage if Firebase not configured
+      const localPrefs = this.getPreferencesFromLocalStorage();
+      if (localPrefs) {
+        return {
+          success: true,
+          data: { ...localPrefs, userId }
+        };
+      } else {
+        const defaultPrefs: UserPreferences = {
+          ...DEFAULT_PREFERENCES,
+          userId,
+          id: userId,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        this.savePreferencesToLocalStorage(defaultPrefs);
+        return {
+          success: true,
+          data: defaultPrefs
+        };
+      }
+    }
+
     try {
       const docRef = doc(db, this.COLLECTION_NAME, userId);
       const docSnap = await getDoc(docRef);
@@ -98,6 +171,67 @@ export class PreferencesService {
     userId: string, 
     preferences: Partial<UserPreferences>
   ): Promise<ApiResponse<UserPreferences>> {
+    // If no userId (unauthenticated), use localStorage
+    if (!userId) {
+      try {
+        const existingPrefs = this.getPreferencesFromLocalStorage();
+        const updatedPrefs: UserPreferences = {
+          ...DEFAULT_PREFERENCES,
+          ...existingPrefs,
+          ...preferences,
+          userId: 'local',
+          id: 'local',
+          updatedAt: new Date().toISOString(),
+          createdAt: existingPrefs?.createdAt || new Date().toISOString()
+        };
+        
+        this.savePreferencesToLocalStorage(updatedPrefs);
+        
+        return {
+          success: true,
+          data: updatedPrefs,
+          message: 'Preferences saved locally'
+        };
+      } catch (error) {
+        console.error('Error updating local preferences:', error);
+        return {
+          success: false,
+          error: 'Failed to save preferences locally'
+        };
+      }
+    }
+
+    // For authenticated users, try Firestore if configured
+    if (!isFirebaseConfigured) {
+      // Fall back to localStorage if Firebase not configured
+      try {
+        const existingPrefs = this.getPreferencesFromLocalStorage();
+        const updatedPrefs: UserPreferences = {
+          ...DEFAULT_PREFERENCES,
+          ...existingPrefs,
+          ...preferences,
+          userId,
+          id: userId,
+          updatedAt: new Date().toISOString(),
+          createdAt: existingPrefs?.createdAt || new Date().toISOString()
+        };
+        
+        this.savePreferencesToLocalStorage(updatedPrefs);
+        
+        return {
+          success: true,
+          data: updatedPrefs,
+          message: 'Preferences saved locally'
+        };
+      } catch (error) {
+        console.error('Error updating local preferences:', error);
+        return {
+          success: false,
+          error: 'Failed to save preferences locally'
+        };
+      }
+    }
+
     try {
       const docRef = doc(db, this.COLLECTION_NAME, userId);
       
@@ -140,9 +274,10 @@ export class PreferencesService {
 
   // Initialize preferences for a new user
   async initializeUserPreferences(userId: string): Promise<ApiResponse<UserPreferences>> {
+    const actualUserId = userId || 'local';
     const defaultPrefs: Omit<UserPreferences, 'id' | 'createdAt' | 'updatedAt'> = {
       ...DEFAULT_PREFERENCES,
-      userId
+      userId: actualUserId
     };
     
     return this.updateUserPreferences(userId, defaultPrefs);

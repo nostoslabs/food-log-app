@@ -14,20 +14,12 @@ export function usePreferences() {
   // Load preferences when user changes
   useEffect(() => {
     const loadPreferences = async () => {
-      if (!user) {
-        // Reset to default preferences when user logs out
-        setPreferences({
-          ...DEFAULT_PREFERENCES,
-          userId: '',
-        });
-        return;
-      }
-
       setLoading(true);
       setError(null);
 
       try {
-        const result = await preferencesService.getUserPreferences(user.uid);
+        const userId = user?.uid || ''; // Empty string for unauthenticated users
+        const result = await preferencesService.getUserPreferences(userId);
         
         if (result.success && result.data) {
           setPreferences(result.data);
@@ -36,7 +28,7 @@ export function usePreferences() {
           // Fall back to defaults
           setPreferences({
             ...DEFAULT_PREFERENCES,
-            userId: user.uid,
+            userId: userId || 'local',
           });
         }
       } catch (err) {
@@ -45,7 +37,7 @@ export function usePreferences() {
         // Fall back to defaults
         setPreferences({
           ...DEFAULT_PREFERENCES,
-          userId: user.uid,
+          userId: user?.uid || 'local',
         });
       } finally {
         setLoading(false);
@@ -57,16 +49,12 @@ export function usePreferences() {
 
   // Update preferences
   const updatePreferences = useCallback(async (updates: Partial<UserPreferences>): Promise<boolean> => {
-    if (!user) {
-      setError('Must be logged in to update preferences');
-      return false;
-    }
-
     setLoading(true);
     setError(null);
 
     try {
-      const result = await preferencesService.updateUserPreferences(user.uid, updates);
+      const userId = user?.uid || ''; // Empty string for unauthenticated users
+      const result = await preferencesService.updateUserPreferences(userId, updates);
       
       if (result.success && result.data) {
         setPreferences(result.data);
@@ -111,13 +99,12 @@ export function usePreferences() {
 
   // Initialize preferences for new users
   const initializePreferences = useCallback(async (): Promise<boolean> => {
-    if (!user) return false;
-
     setLoading(true);
     setError(null);
 
     try {
-      const result = await preferencesService.initializeUserPreferences(user.uid);
+      const userId = user?.uid || '';
+      const result = await preferencesService.initializeUserPreferences(userId);
       
       if (result.success && result.data) {
         setPreferences(result.data);
