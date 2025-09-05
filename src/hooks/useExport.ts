@@ -155,8 +155,13 @@ export function useExport(options: UseExportOptions = {}) {
                 logs.push(validation.data);
               } else {
                 console.warn(`Export localStorage validation failed for ${transformedLog.date}:`, validation.errors);
-                // Include original log if migration fails to prevent data loss
-                logs.push(transformedLog);
+                // FALLBACK: Try to migrate sleep quality manually for failed validations
+                const fallbackLog = { ...transformedLog };
+                if (fallbackLog.sleepQuality && fallbackLog.sleepQuality > 0 && fallbackLog.sleepQuality <= 5) {
+                  fallbackLog.sleepQuality = fallbackLog.sleepQuality * 20;
+                  console.log(`[DATA MIGRATION] Fallback conversion for ${transformedLog.date}: ${transformedLog.sleepQuality}/5 → ${fallbackLog.sleepQuality}%`);
+                }
+                logs.push(fallbackLog);
               }
             }
           }
