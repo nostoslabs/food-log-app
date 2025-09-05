@@ -182,6 +182,17 @@ export function validatePartialFoodLog(data: unknown): ValidationResult<Partial<
   }
 }
 
+// Permissive sleep quality schema for migration (allows 1-5 values before conversion)
+const migrationSleepQualitySchema = z.number()
+  .min(0, 'Sleep quality cannot be negative')
+  .max(100, 'Sleep quality cannot exceed 100%')
+  .int('Sleep quality must be a whole number');
+
+// Migration-specific food log schema (same as regular but with permissive sleep validation)
+const migrationFoodLogSchema = foodLogSchema.extend({
+  sleepQuality: migrationSleepQualitySchema,
+});
+
 // Migration validation - ensures old data can be safely migrated
 export function validateAndMigrateFoodLog(data: unknown): ValidationResult<ValidatedFoodLog> {
   try {
@@ -201,8 +212,16 @@ export function validateAndMigrateFoodLog(data: unknown): ValidationResult<Valid
     if (!migrated.createdAt) migrated.createdAt = now;
     if (!migrated.updatedAt) migrated.updatedAt = now;
     
-    return validateFoodLog(migrated);
+    // Use migration schema that allows the converted values
+    const validated = migrationFoodLogSchema.parse(migrated);
+    return { success: true, data: validated };
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      );
+      return { success: false, errors };
+    }
     return { success: false, errors: ['Migration validation failed'] };
   }
 }

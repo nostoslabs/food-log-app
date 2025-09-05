@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format, subDays } from 'date-fns';
 import { exportService, type ExportOptions, type ExportResult } from '../services/exportService';
 import { firestoreService } from '../services/firestore';
+import { validateAndMigrateFoodLog } from '../schemas/foodLogSchema';
 import type { FoodLog } from '../types';
 
 export type DatePreset = 'today' | 'yesterday' | 'thisWeek' | 'lastWeek' | 'thisMonth' | 'lastMonth' | 'custom';
@@ -148,7 +149,15 @@ export function useExport(options: UseExportOptions = {}) {
                 updatedAt: log.updatedAt || new Date().toISOString()
               };
               
-              logs.push(transformedLog);
+              // CRITICAL: Migrate and validate localStorage data before export
+              const validation = validateAndMigrateFoodLog(transformedLog);
+              if (validation.success && validation.data) {
+                logs.push(validation.data);
+              } else {
+                console.warn(`Export localStorage validation failed for ${transformedLog.date}:`, validation.errors);
+                // Include original log if migration fails to prevent data loss
+                logs.push(transformedLog);
+              }
             }
           }
         }
@@ -183,7 +192,21 @@ export function useExport(options: UseExportOptions = {}) {
       setExportProgress(50);
 
       if (result.success && result.data) {
-        return result.data;
+        // CRITICAL: Migrate and validate all data before export
+        const migratedLogs: FoodLog[] = [];
+        
+        for (const log of result.data) {
+          const validation = validateAndMigrateFoodLog(log);
+          if (validation.success && validation.data) {
+            migratedLogs.push(validation.data);
+          } else {
+            console.warn(`Export data validation failed for ${log.date}:`, validation.errors);
+            // Include original log if migration fails to prevent data loss
+            migratedLogs.push(log);
+          }
+        }
+        
+        return migratedLogs;
       } else {
         throw new Error(result.error || 'Failed to fetch food logs');
       }

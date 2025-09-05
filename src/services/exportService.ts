@@ -206,7 +206,7 @@ export class ExportService {
             healthItems.push(`Water Intake: ${foodLog.dailyWaterIntake} oz`);
           }
           if (foodLog.sleepQuality) {
-            healthItems.push(`Sleep Quality: ${foodLog.sleepQuality}/5`);
+            healthItems.push(`Sleep Quality: ${foodLog.sleepQuality}%`);
           }
           if (foodLog.sleepHours) {
             healthItems.push(`Sleep Hours: ${foodLog.sleepHours}`);
@@ -322,7 +322,7 @@ export class ExportService {
             healthItems.push(`  Water Intake: ${foodLog.dailyWaterIntake} oz`);
           }
           if (foodLog.sleepQuality) {
-            healthItems.push(`  Sleep Quality: ${foodLog.sleepQuality}/5`);
+            healthItems.push(`  Sleep Quality: ${foodLog.sleepQuality}%`);
           }
           if (foodLog.sleepHours) {
             healthItems.push(`  Sleep Hours: ${foodLog.sleepHours}`);
