@@ -87,6 +87,10 @@ const TimelinePage: React.FC = () => {
       // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess(`${mealType.charAt(0).toUpperCase() + mealType.slice(1)} updated!`);
+      // Refresh timeline data after a short delay to show updates
+      setTimeout(() => {
+        refreshTimelineData();
+      }, 500);
       setTimeout(() => {
         setSaveSuccess(null);
       }, 2000);
@@ -103,6 +107,10 @@ const TimelinePage: React.FC = () => {
       // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess('Snack updated!');
+      // Refresh timeline data after a short delay to show updates
+      setTimeout(() => {
+        refreshTimelineData();
+      }, 500);
       setTimeout(() => {
         setSaveSuccess(null);
       }, 2000);
@@ -119,6 +127,10 @@ const TimelinePage: React.FC = () => {
       // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess('Health metrics updated!');
+      // Refresh timeline data after a short delay to show updates
+      setTimeout(() => {
+        refreshTimelineData();
+      }, 500);
       setTimeout(() => {
         setSaveSuccess(null);
       }, 2000);
@@ -134,6 +146,10 @@ const TimelinePage: React.FC = () => {
       // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess('Sleep data updated!');
+      // Refresh timeline data after a short delay to show updates
+      setTimeout(() => {
+        refreshTimelineData();
+      }, 500);
       setTimeout(() => {
         setSaveSuccess(null);
       }, 2000);
