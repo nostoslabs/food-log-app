@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Save, Loader2, Moon } from 'lucide-react';
+import { X, Save, Loader2, Moon, Trash2 } from 'lucide-react';
 
 interface SleepData {
   sleepQuality: number;
@@ -25,6 +25,7 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showClearConfirmation, setShowClearConfirmation] = useState(false);
 
   const handleSave = async () => {
     setIsSubmitting(true);
@@ -44,6 +45,17 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
 
   const updateSleepQuality = (quality: number) => {
     setSleepData(prev => ({ ...prev, sleepQuality: quality }));
+  };
+
+  const handleClear = () => {
+    const clearedData = {
+      sleepQuality: 0,
+      sleepHours: ''
+    };
+    setSleepData(clearedData);
+    setSleepHours(8);
+    setSleepMinutes(0);
+    setShowClearConfirmation(false);
   };
 
   const hasContent = sleepData.sleepQuality > 0 || (sleepData.sleepHours && sleepData.sleepHours.trim() !== '');
@@ -221,13 +233,26 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
 
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            
+            {hasContent && (
+              <button
+                onClick={() => setShowClearConfirmation(true)}
+                className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-all duration-200"
+                disabled={isSubmitting}
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear All
+              </button>
+            )}
+          </div>
           
           <button
             onClick={handleSave}
@@ -247,6 +272,50 @@ export const QuickSleepEntry: React.FC<QuickSleepEntryProps> = ({
             )}
           </button>
         </div>
+
+        {/* Clear Confirmation Dialog */}
+        {showClearConfirmation && (
+          <motion.div
+            className="absolute inset-0 bg-black/50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Clear All Data?</h3>
+              </div>
+              
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to clear all sleep data? This action cannot be undone.
+              </p>
+              
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowClearConfirmation(false)}
+                  className="px-4 py-2 text-gray-700 hover:text-gray-900 font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleClear}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear All
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );
