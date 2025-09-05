@@ -162,48 +162,95 @@ export async function syncLocalStorageToFirestore(userId: string): Promise<{
   errors: string[];
 }> {
   console.log('[DATA SYNC] Starting localStorage to Firestore sync for user:', userId);
+  console.log('[DATA SYNC] localStorage.length:', localStorage.length);
   
   let syncedCount = 0;
   let totalFound = 0;
   const errors: string[] = [];
   
   try {
+    // Log all localStorage keys first
+    const allKeys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) allKeys.push(key);
+    }
+    console.log('[DATA SYNC] All localStorage keys:', allKeys);
+    
     // Scan all localStorage for food logs
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('foodLog_')) {
+        console.log(`[DATA SYNC] Found foodLog key: ${key}`);
         const stored = localStorage.getItem(key);
         if (stored) {
           try {
             totalFound++;
             const foodLog = JSON.parse(stored);
+            console.log(`[DATA SYNC] Parsed ${key}:`, {
+              date: foodLog.date,
+              createdAt: foodLog.createdAt,
+              updatedAt: foodLog.updatedAt,
+              hasBreakfast: !!foodLog.breakfast?.meatDairy,
+              hasLunch: !!foodLog.lunch?.meatDairy,
+              hasDinner: !!foodLog.dinner?.meatDairy,
+              sleepQuality: foodLog.sleepQuality
+            });
             
             // Ensure the log has the userId
             const logWithUser = { ...foodLog, userId };
             
             // Sync to Firestore
+            console.log(`[DATA SYNC] Attempting to sync ${foodLog.date} to Firestore...`);
             const result = await firestoreService.upsertFoodLog(logWithUser);
             if (result.success) {
               syncedCount++;
-              console.log(`[DATA SYNC] Synced ${foodLog.date} to Firestore`);
+              console.log(`[DATA SYNC] ✅ Successfully synced ${foodLog.date} to Firestore`);
             } else {
+              console.error(`[DATA SYNC] ❌ Failed to sync ${foodLog.date}:`, result.error);
               errors.push(`Failed to sync ${foodLog.date}: ${result.error}`);
             }
             
           } catch (parseError) {
+            console.error(`[DATA SYNC] ❌ Parse error for ${key}:`, parseError);
             errors.push(`Failed to parse localStorage entry ${key}: ${parseError}`);
           }
+        } else {
+          console.log(`[DATA SYNC] ❌ No data found for key ${key}`);
         }
       }
     }
     
-    console.log(`[DATA SYNC] Sync completed: ${syncedCount}/${totalFound} entries synced`);
+    console.log(`[DATA SYNC] 📊 Final sync report: ${syncedCount}/${totalFound} entries synced`);
+    if (errors.length > 0) {
+      console.error('[DATA SYNC] ❌ Sync errors:', errors);
+    }
     return { syncedCount, totalFound, errors };
     
   } catch (error) {
-    console.error('[DATA SYNC] Error during localStorage sync:', error);
+    console.error('[DATA SYNC] 💥 Critical error during localStorage sync:', error);
     errors.push(error instanceof Error ? error.message : 'Unknown sync error');
     return { syncedCount, totalFound, errors };
+  }
+}
+
+/**
+ * TEST FUNCTION: Manually trigger sync for testing
+ * This allows testing sync without signing out/in
+ */
+export async function testSyncToFirestore(testUserId = 'test-user-123'): Promise<void> {
+  console.log('[TEST SYNC] Manually triggering sync for testing...');
+  try {
+    const result = await syncLocalStorageToFirestore(testUserId);
+    console.log('[TEST SYNC] Manual sync completed:', result);
+    
+    // Make function available globally for browser console testing
+    if (typeof window !== 'undefined') {
+      (window as any).testSync = () => testSyncToFirestore(testUserId);
+      console.log('[TEST SYNC] Function available as window.testSync() in console');
+    }
+  } catch (error) {
+    console.error('[TEST SYNC] Manual sync failed:', error);
   }
 }
 
