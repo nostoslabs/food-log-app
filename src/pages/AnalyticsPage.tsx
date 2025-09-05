@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Calendar, Target, Droplets, Moon, Activity, Zap } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { BarChart3, TrendingUp, Target, Droplets, Moon, Activity, Zap } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { useAnalytics } from '../hooks';
 
 const COLORS = ['#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
@@ -236,10 +236,10 @@ const AnalyticsPage: React.FC = () => {
                         cy={96}
                         outerRadius={80}
                         dataKey="count"
-                        label={({ meal, percent }) => `${meal} ${(percent * 100).toFixed(0)}%`}
+                        label={({ meal, percent }) => `${meal} ${((percent || 0) * 100).toFixed(0)}%`}
                         labelLine={false}
                       >
-                        {analytics.mealDistribution.map((entry, index) => (
+                        {analytics.mealDistribution.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>

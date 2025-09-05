@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { format, subDays, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
+import { format, subDays, eachDayOfInterval } from 'date-fns';
 import type { FoodLog } from '../types';
 
 export interface AnalyticsData {

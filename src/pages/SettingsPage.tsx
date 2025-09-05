@@ -21,9 +21,6 @@ const SettingsPage: React.FC = () => {
     loading, 
     error, 
     updatePreferences,
-    updateWaterPreferences,
-    updateTheme,
-    updateNotificationSettings,
     clearError 
   } = usePreferences();
 

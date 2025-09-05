@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Settings, Target, FileText, LogOut, Sparkles } from 'lucide-react';
+import { User, Settings, Target, FileText, LogOut, Sparkles, ChevronRight } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import AuthForm from '../components/auth/AuthForm';
 
@@ -71,15 +71,6 @@ const ProfilePage: React.FC = () => {
           { icon: Target, label: 'Goals', subtitle: 'Set your daily targets', path: '#', available: false },
           { icon: FileText, label: 'Export Data', subtitle: 'Download your food logs', path: '#', available: false },
         ].map((item, index) => {
-          const Component = item.available ? Link : 'button';
-          const props = item.available 
-            ? { to: item.path } 
-            : { 
-                onClick: () => {}, 
-                disabled: true,
-                className: "w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 opacity-50 cursor-not-allowed"
-              };
-          
           return (
             <motion.div
               key={item.label}
@@ -87,19 +78,34 @@ const ProfilePage: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 + index * 0.05 }}
             >
-              <Component
-                {...(item.available ? { to: item.path } : {})}
-                className={item.available 
-                  ? "block w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105" 
-                  : "w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 opacity-50 cursor-not-allowed"
-                }
-                {...(!item.available ? { onClick: (e: React.MouseEvent) => e.preventDefault() } : {})}
-              >
-                <motion.div 
-                  className="flex items-center gap-4 w-full"
-                  whileHover={item.available ? { scale: 1.02 } : {}}
-                  whileTap={item.available ? { scale: 0.98 } : {}}
+              {item.available ? (
+                <Link
+                  to={item.path}
+                  className="block w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105"
                 >
+                  <motion.div 
+                    className="flex items-center gap-4 w-full"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                      <item.icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-left flex-1">
+                      <h3 className="font-semibold text-gray-900">{item.label}</h3>
+                      <p className="text-sm text-gray-500">{item.subtitle}</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </motion.div>
+                </Link>
+              ) : (
+                <button
+                  onClick={(e: React.MouseEvent) => e.preventDefault()}
+                  className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 opacity-50 cursor-not-allowed"
+                >
+                  <motion.div 
+                    className="flex items-center gap-4 w-full"
+                  >
                   <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                     <item.icon className="w-5 h-5 text-gray-600" />
                   </div>
@@ -114,8 +120,9 @@ const ProfilePage: React.FC = () => {
                     </h3>
                     <p className="text-sm text-gray-500">{item.subtitle}</p>
                   </div>
-                </motion.div>
-              </Component>
+                  </motion.div>
+                </button>
+              )}
             </motion.div>
           );
         })}
