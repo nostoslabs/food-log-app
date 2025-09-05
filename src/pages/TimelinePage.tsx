@@ -89,7 +89,6 @@ const TimelinePage: React.FC = () => {
       setSaveSuccess(`${mealType.charAt(0).toUpperCase() + mealType.slice(1)} updated!`);
       setTimeout(() => {
         setSaveSuccess(null);
-        refreshTimelineData(); // Refresh to show updated data
       }, 2000);
     } catch (error) {
       console.error('Failed to save meal:', error);
@@ -106,7 +105,6 @@ const TimelinePage: React.FC = () => {
       setSaveSuccess('Snack updated!');
       setTimeout(() => {
         setSaveSuccess(null);
-        refreshTimelineData();
       }, 2000);
     } catch (error) {
       console.error('Failed to save snack:', error);
@@ -123,7 +121,6 @@ const TimelinePage: React.FC = () => {
       setSaveSuccess('Health metrics updated!');
       setTimeout(() => {
         setSaveSuccess(null);
-        refreshTimelineData();
       }, 2000);
     } catch (error) {
       console.error('Failed to save health metrics:', error);
@@ -139,7 +136,6 @@ const TimelinePage: React.FC = () => {
       setSaveSuccess('Sleep data updated!');
       setTimeout(() => {
         setSaveSuccess(null);
-        refreshTimelineData();
       }, 2000);
     } catch (error) {
       console.error('Failed to save sleep data:', error);
