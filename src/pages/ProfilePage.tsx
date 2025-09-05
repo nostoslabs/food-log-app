@@ -4,10 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { User, Settings, Target, FileText, LogOut, Sparkles, ChevronRight } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import AuthForm from '../components/auth/AuthForm';
+import ExportModal from '../components/export/ExportModal';
 
 const ProfilePage: React.FC = () => {
   const { user, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -67,9 +69,30 @@ const ProfilePage: React.FC = () => {
         transition={{ delay: 0.2 }}
       >
 {[
-          { icon: Settings, label: 'Settings', subtitle: 'App preferences and defaults', path: '/settings', available: true },
-          { icon: Target, label: 'Goals', subtitle: 'Set your daily targets', path: '#', available: false },
-          { icon: FileText, label: 'Export Data', subtitle: 'Download your food logs', path: '#', available: false },
+          { 
+            icon: Settings, 
+            label: 'Settings', 
+            subtitle: 'App preferences and defaults', 
+            path: '/settings', 
+            available: true,
+            action: undefined
+          },
+          { 
+            icon: Target, 
+            label: 'Goals', 
+            subtitle: 'Set your daily targets', 
+            path: '#', 
+            available: false,
+            action: undefined
+          },
+          { 
+            icon: FileText, 
+            label: 'Export Data', 
+            subtitle: 'Download your food logs', 
+            path: '#', 
+            available: true,
+            action: () => setShowExportModal(true)
+          },
         ].map((item, index) => {
           return (
             <motion.div
@@ -79,25 +102,47 @@ const ProfilePage: React.FC = () => {
               transition={{ delay: 0.2 + index * 0.05 }}
             >
               {item.available ? (
-                <Link
-                  to={item.path}
-                  className="block w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105"
-                >
-                  <motion.div 
-                    className="flex items-center gap-4 w-full"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                item.action ? (
+                  <button
+                    onClick={item.action}
+                    className="block w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                      <item.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="text-left flex-1">
-                      <h3 className="font-semibold text-gray-900">{item.label}</h3>
-                      <p className="text-sm text-gray-500">{item.subtitle}</p>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                  </motion.div>
-                </Link>
+                    <motion.div 
+                      className="flex items-center gap-4 w-full"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                        <item.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <h3 className="font-semibold text-gray-900">{item.label}</h3>
+                        <p className="text-sm text-gray-500">{item.subtitle}</p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </motion.div>
+                  </button>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className="block w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:scale-105"
+                  >
+                    <motion.div 
+                      className="flex items-center gap-4 w-full"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                        <item.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="text-left flex-1">
+                        <h3 className="font-semibold text-gray-900">{item.label}</h3>
+                        <p className="text-sm text-gray-500">{item.subtitle}</p>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                    </motion.div>
+                  </Link>
+                )
               ) : (
                 <button
                   onClick={(e: React.MouseEvent) => e.preventDefault()}
@@ -257,6 +302,14 @@ const ProfilePage: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        initialFormat="pdf"
+        initialPreset="thisWeek"
+      />
     </div>
   );
 };
