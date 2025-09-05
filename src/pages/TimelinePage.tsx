@@ -21,14 +21,14 @@ const TimelinePage: React.FC = () => {
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const { timelineData, loading, error, refreshTimelineData, getDaySummary } = useTimelineData(7);
   
-  // Use food log hook for the selected modal date
-  const modalDate = activeModal ? new Date(activeModal.date) : currentDate;
+  // Use food log hook for current date to maintain stable context
   const { 
     foodLog, 
     updateMeal, 
     updateSnack, 
-    updateHealthMetric 
-  } = useFoodLog(modalDate);
+    updateHealthMetric,
+    forceSave 
+  } = useFoodLog(currentDate);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -84,6 +84,8 @@ const TimelinePage: React.FC = () => {
       Object.entries(mealData).forEach(([field, value]) => {
         updateMeal(mealType, field as keyof MealData, value as string);
       });
+      // Force save to ensure data is persisted immediately
+      await forceSave();
       setSaveSuccess(`${mealType.charAt(0).toUpperCase() + mealType.slice(1)} updated!`);
       setTimeout(() => {
         setSaveSuccess(null);
@@ -99,6 +101,8 @@ const TimelinePage: React.FC = () => {
       Object.entries(snackData).forEach(([field, value]) => {
         updateSnack(snackType, field as keyof SnackData, value as string);
       });
+      // Force save to ensure data is persisted immediately
+      await forceSave();
       setSaveSuccess('Snack updated!');
       setTimeout(() => {
         setSaveSuccess(null);
@@ -114,6 +118,8 @@ const TimelinePage: React.FC = () => {
       Object.entries(healthData).forEach(([field, value]) => {
         updateHealthMetric(field as 'bowelMovements' | 'exercise' | 'dailyWaterIntake', value);
       });
+      // Force save to ensure data is persisted immediately
+      await forceSave();
       setSaveSuccess('Health metrics updated!');
       setTimeout(() => {
         setSaveSuccess(null);
@@ -128,6 +134,8 @@ const TimelinePage: React.FC = () => {
     try {
       updateHealthMetric('sleepQuality', sleepData.sleepQuality);
       updateHealthMetric('sleepHours', sleepData.sleepHours);
+      // Force save to ensure data is persisted immediately
+      await forceSave();
       setSaveSuccess('Sleep data updated!');
       setTimeout(() => {
         setSaveSuccess(null);

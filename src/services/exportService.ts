@@ -3,7 +3,7 @@ import { format, parseISO, isValid } from 'date-fns';
 import type { FoodLog } from '../types';
 
 export interface ExportOptions {
-  format: 'pdf' | 'text' | 'json';
+  exportFormat: 'pdf' | 'text' | 'json';
   dateRange: {
     start: string;
     end: string;
@@ -57,28 +57,23 @@ export class ExportService {
     if (!meal) return 'No details recorded';
 
     const items = [
-      meal.meat || '',
-      meal.vegetables || '',
-      meal.grains || '',
+      meal.meatDairy || '',
+      meal.vegetablesFruits || '',
+      meal.breadsCerealsGrains || '',
       meal.fats || '',
-      meal.sweets || '',
-      meal.water || '',
+      meal.candySweets || '',
+      meal.waterIntake || '',
       meal.otherDrinks || ''
     ].filter(item => item.trim().length > 0);
 
     return items.length > 0 ? items.join(', ') : 'No details recorded';
   }
 
-  private getSnackText(foodLog: FoodLog, snackType: 'midMorning' | 'midDay' | 'nighttime'): string {
-    const snack = foodLog.snacks?.[snackType];
+  private getSnackText(foodLog: FoodLog, snackType: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack'): string {
+    const snack = foodLog[snackType];
     if (!snack) return 'No snack recorded';
 
-    const items = [
-      snack.items || '',
-      snack.drinks || ''
-    ].filter(item => item.trim().length > 0);
-
-    return items.length > 0 ? items.join(', ') : 'No snack recorded';
+    return snack.snack || 'No snack recorded';
   }
 
   async exportToPDF(foodLogs: FoodLog[], options: ExportOptions): Promise<ExportResult> {
@@ -118,7 +113,7 @@ export class ExportService {
       pdf.setTextColor(0, 0, 0);
 
       // Process each food log
-      for (const [index, foodLog] of foodLogs.entries()) {
+      for (const foodLog of foodLogs) {
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
           pdf.addPage();
@@ -137,7 +132,7 @@ export class ExportService {
         pdf.setFont('helvetica', 'normal');
 
         // Breakfast
-        if (foodLog.breakfast && (foodLog.breakfast.meat || foodLog.breakfast.vegetables || foodLog.breakfast.grains)) {
+        if (foodLog.breakfast && (foodLog.breakfast.meatDairy || foodLog.breakfast.vegetablesFruits || foodLog.breakfast.breadsCerealsGrains || foodLog.breakfast.fats || foodLog.breakfast.candySweets || foodLog.breakfast.waterIntake || foodLog.breakfast.otherDrinks)) {
           pdf.setFont('helvetica', 'bold');
           pdf.text(`Breakfast (${this.formatTime(foodLog.breakfast.time || '8:00 AM')})`, margin, yPosition);
           yPosition += lineHeight;
@@ -150,7 +145,7 @@ export class ExportService {
         }
 
         // Lunch
-        if (foodLog.lunch && (foodLog.lunch.meat || foodLog.lunch.vegetables || foodLog.lunch.grains)) {
+        if (foodLog.lunch && (foodLog.lunch.meatDairy || foodLog.lunch.vegetablesFruits || foodLog.lunch.breadsCerealsGrains || foodLog.lunch.fats || foodLog.lunch.candySweets || foodLog.lunch.waterIntake || foodLog.lunch.otherDrinks)) {
           pdf.setFont('helvetica', 'bold');
           pdf.text(`Lunch (${this.formatTime(foodLog.lunch.time || '12:00 PM')})`, margin, yPosition);
           yPosition += lineHeight;
@@ -163,7 +158,7 @@ export class ExportService {
         }
 
         // Dinner
-        if (foodLog.dinner && (foodLog.dinner.meat || foodLog.dinner.vegetables || foodLog.dinner.grains)) {
+        if (foodLog.dinner && (foodLog.dinner.meatDairy || foodLog.dinner.vegetablesFruits || foodLog.dinner.breadsCerealsGrains || foodLog.dinner.fats || foodLog.dinner.candySweets || foodLog.dinner.waterIntake || foodLog.dinner.otherDrinks)) {
           pdf.setFont('helvetica', 'bold');
           pdf.text(`Dinner (${this.formatTime(foodLog.dinner.time || '6:00 PM')})`, margin, yPosition);
           yPosition += lineHeight;
@@ -176,63 +171,63 @@ export class ExportService {
         }
 
         // Snacks
-        if (foodLog.snacks) {
-          const snackTypes: Array<{ key: 'midMorning' | 'midDay' | 'nighttime', label: string, time: string }> = [
-            { key: 'midMorning', label: 'Mid-Morning Snack', time: '10:00 AM' },
-            { key: 'midDay', label: 'Afternoon Snack', time: '3:00 PM' },
-            { key: 'nighttime', label: 'Evening Snack', time: '8:00 PM' }
-          ];
+        const snackTypes: Array<{ key: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack', label: string, time: string }> = [
+          { key: 'midMorningSnack', label: 'Mid-Morning Snack', time: '10:00 AM' },
+          { key: 'midDaySnack', label: 'Afternoon Snack', time: '3:00 PM' },
+          { key: 'nighttimeSnack', label: 'Evening Snack', time: '8:00 PM' }
+        ];
 
-          for (const snackType of snackTypes) {
-            const snack = foodLog.snacks[snackType.key];
-            if (snack && (snack.items || snack.drinks)) {
-              pdf.setFont('helvetica', 'bold');
-              pdf.text(`${snackType.label} (${this.formatTime(snack.time || snackType.time)})`, margin, yPosition);
-              yPosition += lineHeight;
-              
-              pdf.setFont('helvetica', 'normal');
-              const snackText = this.getSnackText(foodLog, snackType.key);
-              const snackLines = pdf.splitTextToSize(snackText, maxWidth - 20);
-              pdf.text(snackLines, margin + 10, yPosition);
-              yPosition += lineHeight * snackLines.length + 3;
-            }
+        for (const snackType of snackTypes) {
+          const snack = foodLog[snackType.key];
+          if (snack && snack.snack) {
+            pdf.setFont('helvetica', 'bold');
+            pdf.text(`${snackType.label} (${this.formatTime(snack.time || snackType.time)})`, margin, yPosition);
+            yPosition += lineHeight;
+            
+            pdf.setFont('helvetica', 'normal');
+            const snackText = this.getSnackText(foodLog, snackType.key);
+            const snackLines = pdf.splitTextToSize(snackText, maxWidth - 20);
+            pdf.text(snackLines, margin + 10, yPosition);
+            yPosition += lineHeight * snackLines.length + 3;
           }
         }
 
         // Health metrics
-        if (options.includeHealthMetrics && foodLog.health) {
-          pdf.setFont('helvetica', 'bold');
-          pdf.text('Health Metrics', margin, yPosition);
-          yPosition += lineHeight;
-          
-          pdf.setFont('helvetica', 'normal');
+        if (options.includeHealthMetrics) {
           const healthItems = [];
           
-          if (foodLog.health.bowelMovements) {
-            healthItems.push(`Bowel Movements: ${foodLog.health.bowelMovements}`);
+          if (foodLog.bowelMovements) {
+            healthItems.push(`Bowel Movements: ${foodLog.bowelMovements}`);
           }
-          if (foodLog.health.exercise) {
-            healthItems.push(`Exercise: ${foodLog.health.exercise}`);
+          if (foodLog.exercise) {
+            healthItems.push(`Exercise: ${foodLog.exercise}`);
           }
-          if (foodLog.health.waterIntake) {
-            healthItems.push(`Water Intake: ${foodLog.health.waterIntake} oz`);
+          if (foodLog.dailyWaterIntake) {
+            healthItems.push(`Water Intake: ${foodLog.dailyWaterIntake} oz`);
           }
-          if (foodLog.health.sleepQuality) {
-            healthItems.push(`Sleep Quality: ${foodLog.health.sleepQuality}/5`);
+          if (foodLog.sleepQuality) {
+            healthItems.push(`Sleep Quality: ${foodLog.sleepQuality}/5`);
           }
-          if (foodLog.health.sleepHours) {
-            healthItems.push(`Sleep Hours: ${foodLog.health.sleepHours}`);
+          if (foodLog.sleepHours) {
+            healthItems.push(`Sleep Hours: ${foodLog.sleepHours}`);
           }
-          if (foodLog.health.notes) {
-            healthItems.push(`Notes: ${foodLog.health.notes}`);
+          if (foodLog.notes) {
+            healthItems.push(`Notes: ${foodLog.notes}`);
           }
 
-          for (const item of healthItems) {
-            const itemLines = pdf.splitTextToSize(item, maxWidth - 20);
-            pdf.text(itemLines, margin + 10, yPosition);
-            yPosition += lineHeight * itemLines.length;
+          if (healthItems.length > 0) {
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('Health Metrics', margin, yPosition);
+            yPosition += lineHeight;
+            
+            pdf.setFont('helvetica', 'normal');
+            for (const item of healthItems) {
+              const itemLines = pdf.splitTextToSize(item, maxWidth - 20);
+              pdf.text(itemLines, margin + 10, yPosition);
+              yPosition += lineHeight * itemLines.length;
+            }
+            yPosition += 3;
           }
-          yPosition += 3;
         }
 
         // Add some space between days
@@ -283,61 +278,63 @@ export class ExportService {
         content += '-'.repeat(30) + '\n';
 
         // Meals
-        if (foodLog.breakfast && (foodLog.breakfast.meat || foodLog.breakfast.vegetables || foodLog.breakfast.grains)) {
+        if (foodLog.breakfast && (foodLog.breakfast.meatDairy || foodLog.breakfast.vegetablesFruits || foodLog.breakfast.breadsCerealsGrains || foodLog.breakfast.fats || foodLog.breakfast.candySweets || foodLog.breakfast.waterIntake || foodLog.breakfast.otherDrinks)) {
           content += `Breakfast (${this.formatTime(foodLog.breakfast.time || '8:00 AM')})\n`;
           content += `  ${this.getFoodItemsText(foodLog, 'breakfast')}\n\n`;
         }
 
-        if (foodLog.lunch && (foodLog.lunch.meat || foodLog.lunch.vegetables || foodLog.lunch.grains)) {
+        if (foodLog.lunch && (foodLog.lunch.meatDairy || foodLog.lunch.vegetablesFruits || foodLog.lunch.breadsCerealsGrains || foodLog.lunch.fats || foodLog.lunch.candySweets || foodLog.lunch.waterIntake || foodLog.lunch.otherDrinks)) {
           content += `Lunch (${this.formatTime(foodLog.lunch.time || '12:00 PM')})\n`;
           content += `  ${this.getFoodItemsText(foodLog, 'lunch')}\n\n`;
         }
 
-        if (foodLog.dinner && (foodLog.dinner.meat || foodLog.dinner.vegetables || foodLog.dinner.grains)) {
+        if (foodLog.dinner && (foodLog.dinner.meatDairy || foodLog.dinner.vegetablesFruits || foodLog.dinner.breadsCerealsGrains || foodLog.dinner.fats || foodLog.dinner.candySweets || foodLog.dinner.waterIntake || foodLog.dinner.otherDrinks)) {
           content += `Dinner (${this.formatTime(foodLog.dinner.time || '6:00 PM')})\n`;
           content += `  ${this.getFoodItemsText(foodLog, 'dinner')}\n\n`;
         }
 
         // Snacks
-        if (foodLog.snacks) {
-          const snackTypes: Array<{ key: 'midMorning' | 'midDay' | 'nighttime', label: string, time: string }> = [
-            { key: 'midMorning', label: 'Mid-Morning Snack', time: '10:00 AM' },
-            { key: 'midDay', label: 'Afternoon Snack', time: '3:00 PM' },
-            { key: 'nighttime', label: 'Evening Snack', time: '8:00 PM' }
-          ];
+        const snackTypes: Array<{ key: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack', label: string, time: string }> = [
+          { key: 'midMorningSnack', label: 'Mid-Morning Snack', time: '10:00 AM' },
+          { key: 'midDaySnack', label: 'Afternoon Snack', time: '3:00 PM' },
+          { key: 'nighttimeSnack', label: 'Evening Snack', time: '8:00 PM' }
+        ];
 
-          for (const snackType of snackTypes) {
-            const snack = foodLog.snacks[snackType.key];
-            if (snack && (snack.items || snack.drinks)) {
-              content += `${snackType.label} (${this.formatTime(snack.time || snackType.time)})\n`;
-              content += `  ${this.getSnackText(foodLog, snackType.key)}\n\n`;
-            }
+        for (const snackType of snackTypes) {
+          const snack = foodLog[snackType.key];
+          if (snack && snack.snack) {
+            content += `${snackType.label} (${this.formatTime(snack.time || snackType.time)})\n`;
+            content += `  ${this.getSnackText(foodLog, snackType.key)}\n\n`;
           }
         }
 
         // Health metrics
-        if (options.includeHealthMetrics && foodLog.health) {
-          content += 'Health Metrics:\n';
+        if (options.includeHealthMetrics) {
+          const healthItems = [];
           
-          if (foodLog.health.bowelMovements) {
-            content += `  Bowel Movements: ${foodLog.health.bowelMovements}\n`;
+          if (foodLog.bowelMovements) {
+            healthItems.push(`  Bowel Movements: ${foodLog.bowelMovements}`);
           }
-          if (foodLog.health.exercise) {
-            content += `  Exercise: ${foodLog.health.exercise}\n`;
+          if (foodLog.exercise) {
+            healthItems.push(`  Exercise: ${foodLog.exercise}`);
           }
-          if (foodLog.health.waterIntake) {
-            content += `  Water Intake: ${foodLog.health.waterIntake} oz\n`;
+          if (foodLog.dailyWaterIntake) {
+            healthItems.push(`  Water Intake: ${foodLog.dailyWaterIntake} oz`);
           }
-          if (foodLog.health.sleepQuality) {
-            content += `  Sleep Quality: ${foodLog.health.sleepQuality}/5\n`;
+          if (foodLog.sleepQuality) {
+            healthItems.push(`  Sleep Quality: ${foodLog.sleepQuality}/5`);
           }
-          if (foodLog.health.sleepHours) {
-            content += `  Sleep Hours: ${foodLog.health.sleepHours}\n`;
+          if (foodLog.sleepHours) {
+            healthItems.push(`  Sleep Hours: ${foodLog.sleepHours}`);
           }
-          if (foodLog.health.notes) {
-            content += `  Notes: ${foodLog.health.notes}\n`;
+          if (foodLog.notes) {
+            healthItems.push(`  Notes: ${foodLog.notes}`);
           }
-          content += '\n';
+          
+          if (healthItems.length > 0) {
+            content += 'Health Metrics:\n';
+            content += healthItems.join('\n') + '\n\n';
+          }
         }
 
         content += '\n';

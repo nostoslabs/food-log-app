@@ -4,11 +4,9 @@ import {
   X, 
   FileText, 
   Download, 
-  Calendar, 
   FileIcon, 
   CheckCircle, 
   AlertCircle,
-  Clock,
   Loader2
 } from 'lucide-react';
 import { format as formatDate, parseISO, isValid } from 'date-fns';

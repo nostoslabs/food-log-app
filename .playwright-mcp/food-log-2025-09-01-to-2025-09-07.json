@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "title": "Food & Health Log Report",
+    "dateRange": {
+      "start": "2025-09-01",
+      "end": "2025-09-07"
+    },
+    "generatedAt": "2025-09-05T02:20:51.655Z",
+    "totalEntries": 1,
+    "includeHealthMetrics": true
+  },
+  "data": [
+    {
+      "date": "2025-09-04",
+      "breakfast": {
+        "time": "",
+        "meat": "scrambled eggs, greek yogurt",
+        "vegetables": "",
+        "grains": "",
+        "fats": "",
+        "sweets": "",
+        "water": "",
+        "otherDrinks": ""
+      },
+      "lunch": {
+        "time": "11:30",
+        "meat": "",
+        "vegetables": "",
+        "grains": "",
+        "fats": "",
+        "sweets": "",
+        "water": "",
+        "otherDrinks": ""
+      },
+      "dinner": {
+        "time": "",
+        "meat": "grilled salmon",
+        "vegetables": "",
+        "grains": "",
+        "fats": "",
+        "sweets": "",
+        "water": "",
+        "otherDrinks": ""
+      },
+      "snacks": {
+        "midMorning": {
+          "time": "",
+          "items": "",
+          "drinks": ""
+        },
+        "midDay": {
+          "time": "",
+          "items": "",
+          "drinks": ""
+        },
+        "nighttime": {
+          "time": "",
+          "items": "",
+          "drinks": ""
+        }
+      },
+      "health": {
+        "bowelMovements": "",
+        "exercise": "",
+        "waterIntake": "",
+        "sleepQuality": 3,
+        "sleepHours": "",
+        "notes": ""
+      },
+      "createdAt": "2025-09-04T16:24:40.625Z",
+      "updatedAt": "2025-09-05T02:03:10.521Z"
+    }
+  ]
+}

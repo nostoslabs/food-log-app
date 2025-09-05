@@ -62,12 +62,12 @@ export class TextExportFormatter {
     if (!meal) return [];
 
     return [
-      meal.meat || '',
-      meal.vegetables || '',
-      meal.grains || '',
+      meal.meatDairy || '',
+      meal.vegetablesFruits || '',
+      meal.breadsCerealsGrains || '',
       meal.fats || '',
-      meal.sweets || '',
-      meal.water || '',
+      meal.candySweets || '',
+      meal.waterIntake || '',
       meal.otherDrinks || ''
     ].filter(item => item && item.trim().length > 0);
   }
@@ -76,8 +76,7 @@ export class TextExportFormatter {
     if (!snack) return [];
 
     return [
-      snack.items || '',
-      snack.drinks || ''
+      snack.snack || ''
     ].filter(item => item && item.trim().length > 0);
   }
 
@@ -109,48 +108,46 @@ export class TextExportFormatter {
     }
 
     // Snacks
-    if (foodLog.snacks) {
-      const snackTypes = [
-        { key: 'midMorning', label: 'Mid-Morning Snack', defaultTime: '10:00 AM' },
-        { key: 'midDay', label: 'Afternoon Snack', defaultTime: '3:00 PM' },
-        { key: 'nighttime', label: 'Evening Snack', defaultTime: '8:00 PM' }
-      ] as const;
+    const snackTypes = [
+      { key: 'midMorningSnack', label: 'Mid-Morning Snack', defaultTime: '10:00 AM' },
+      { key: 'midDaySnack', label: 'Afternoon Snack', defaultTime: '3:00 PM' },
+      { key: 'nighttimeSnack', label: 'Evening Snack', defaultTime: '8:00 PM' }
+    ] as const;
 
-      for (const snackType of snackTypes) {
-        const snack = foodLog.snacks[snackType.key];
-        if (snack) {
-          const items = this.getSnackItems(snack);
-          if (items.length > 0) {
-            const time = this.formatTime(snack.time || snackType.defaultTime);
-            lines.push(`${snackType.label} (${time})`);
-            lines.push(`  ${items.join(', ')}`);
-            lines.push('');
-          }
+    for (const snackType of snackTypes) {
+      const snack = foodLog[snackType.key];
+      if (snack) {
+        const items = this.getSnackItems(snack);
+        if (items.length > 0) {
+          const time = this.formatTime(snack.time || snackType.defaultTime);
+          lines.push(`${snackType.label} (${time})`);
+          lines.push(`  ${items.join(', ')}`);
+          lines.push('');
         }
       }
     }
 
     // Health metrics
-    if (this.options.includeHealthMetrics && foodLog.health) {
+    if (this.options.includeHealthMetrics) {
       const healthItems: string[] = [];
       
-      if (foodLog.health.bowelMovements) {
-        healthItems.push(`Bowel Movements: ${foodLog.health.bowelMovements}`);
+      if (foodLog.bowelMovements) {
+        healthItems.push(`Bowel Movements: ${foodLog.bowelMovements}`);
       }
-      if (foodLog.health.exercise) {
-        healthItems.push(`Exercise: ${foodLog.health.exercise}`);
+      if (foodLog.exercise) {
+        healthItems.push(`Exercise: ${foodLog.exercise}`);
       }
-      if (foodLog.health.waterIntake) {
-        healthItems.push(`Water Intake: ${foodLog.health.waterIntake} oz`);
+      if (foodLog.dailyWaterIntake) {
+        healthItems.push(`Water Intake: ${foodLog.dailyWaterIntake} oz`);
       }
-      if (foodLog.health.sleepQuality) {
-        healthItems.push(`Sleep Quality: ${foodLog.health.sleepQuality}/5`);
+      if (foodLog.sleepQuality) {
+        healthItems.push(`Sleep Quality: ${foodLog.sleepQuality}/5`);
       }
-      if (foodLog.health.sleepHours) {
-        healthItems.push(`Sleep Hours: ${foodLog.health.sleepHours}`);
+      if (foodLog.sleepHours) {
+        healthItems.push(`Sleep Hours: ${foodLog.sleepHours}`);
       }
-      if (foodLog.health.notes) {
-        healthItems.push(`Notes: ${foodLog.health.notes}`);
+      if (foodLog.notes) {
+        healthItems.push(`Notes: ${foodLog.notes}`);
       }
 
       if (healthItems.length > 0) {
@@ -255,14 +252,14 @@ export class TextExportFormatter {
       const dinnerItems = this.getFoodItems(log.dinner).join('; ');
       
       const snacks = [];
-      if (log.snacks?.midMorning && this.getSnackItems(log.snacks.midMorning).length > 0) {
-        snacks.push(`Morning: ${this.getSnackItems(log.snacks.midMorning).join(', ')}`);
+      if (log.midMorningSnack && this.getSnackItems(log.midMorningSnack).length > 0) {
+        snacks.push(`Morning: ${this.getSnackItems(log.midMorningSnack).join(', ')}`);
       }
-      if (log.snacks?.midDay && this.getSnackItems(log.snacks.midDay).length > 0) {
-        snacks.push(`Afternoon: ${this.getSnackItems(log.snacks.midDay).join(', ')}`);
+      if (log.midDaySnack && this.getSnackItems(log.midDaySnack).length > 0) {
+        snacks.push(`Afternoon: ${this.getSnackItems(log.midDaySnack).join(', ')}`);
       }
-      if (log.snacks?.nighttime && this.getSnackItems(log.snacks.nighttime).length > 0) {
-        snacks.push(`Evening: ${this.getSnackItems(log.snacks.nighttime).join(', ')}`);
+      if (log.nighttimeSnack && this.getSnackItems(log.nighttimeSnack).length > 0) {
+        snacks.push(`Evening: ${this.getSnackItems(log.nighttimeSnack).join(', ')}`);
       }
 
       return [
@@ -274,12 +271,12 @@ export class TextExportFormatter {
         this.formatTime(log.dinner?.time || ''),
         dinnerItems,
         snacks.join('; '),
-        log.health?.waterIntake || '',
-        log.health?.exercise || '',
-        log.health?.sleepQuality || '',
-        log.health?.sleepHours || '',
-        log.health?.bowelMovements || '',
-        log.health?.notes?.replace(/[",]/g, ' ') || '' // Clean notes for CSV
+        log.dailyWaterIntake || '',
+        log.exercise || '',
+        log.sleepQuality || '',
+        log.sleepHours || '',
+        log.bowelMovements || '',
+        log.notes?.replace(/[",]/g, ' ') || '' // Clean notes for CSV
       ].map(field => `"${field}"`).join(',');
     });
 
@@ -317,20 +314,16 @@ export class TextExportFormatter {
       if (log.dinner && this.getFoodItems(log.dinner).length > 0) totalMeals++;
 
       // Count snacks
-      if (log.snacks) {
-        if (log.snacks.midMorning && this.getSnackItems(log.snacks.midMorning).length > 0) totalSnacks++;
-        if (log.snacks.midDay && this.getSnackItems(log.snacks.midDay).length > 0) totalSnacks++;
-        if (log.snacks.nighttime && this.getSnackItems(log.snacks.nighttime).length > 0) totalSnacks++;
-      }
+      if (log.midMorningSnack && this.getSnackItems(log.midMorningSnack).length > 0) totalSnacks++;
+      if (log.midDaySnack && this.getSnackItems(log.midDaySnack).length > 0) totalSnacks++;
+      if (log.nighttimeSnack && this.getSnackItems(log.nighttimeSnack).length > 0) totalSnacks++;
 
       // Health metrics
-      if (log.health) {
-        if (log.health.exercise) daysWithExercise++;
-        if (log.health.waterIntake) totalWaterIntake += parseInt(log.health.waterIntake.toString()) || 0;
-        if (log.health.sleepQuality) {
-          sleepQualitySum += parseInt(log.health.sleepQuality.toString()) || 0;
-          sleepQualityCount++;
-        }
+      if (log.exercise) daysWithExercise++;
+      if (log.dailyWaterIntake) totalWaterIntake += parseInt(log.dailyWaterIntake.toString()) || 0;
+      if (log.sleepQuality) {
+        sleepQualitySum += parseInt(log.sleepQuality.toString()) || 0;
+        sleepQualityCount++;
       }
     });
 

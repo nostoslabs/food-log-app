@@ -96,61 +96,54 @@ export function useExport(options: UseExportOptions = {}) {
               // Transform the data structure to match our FoodLog type
               const transformedLog: FoodLog = {
                 date: log.date,
-                breakfast: log.breakfast ? {
-                  time: log.breakfast.time || '',
-                  meat: log.breakfast.meatDairy || '',
-                  vegetables: log.breakfast.vegetables || '',
-                  grains: log.breakfast.grains || '',
-                  fats: log.breakfast.fats || '',
-                  sweets: log.breakfast.sweets || '',
-                  water: log.breakfast.water || '',
-                  otherDrinks: log.breakfast.otherDrinks || ''
-                } : undefined,
-                lunch: log.lunch ? {
-                  time: log.lunch.time || '',
-                  meat: log.lunch.meatDairy || '',
-                  vegetables: log.lunch.vegetables || '',
-                  grains: log.lunch.grains || '',
-                  fats: log.lunch.fats || '',
-                  sweets: log.lunch.sweets || '',
-                  water: log.lunch.water || '',
-                  otherDrinks: log.lunch.otherDrinks || ''
-                } : undefined,
-                dinner: log.dinner ? {
-                  time: log.dinner.time || '',
-                  meat: log.dinner.meatDairy || '',
-                  vegetables: log.dinner.vegetables || '',
-                  grains: log.dinner.grains || '',
-                  fats: log.dinner.fats || '',
-                  sweets: log.dinner.sweets || '',
-                  water: log.dinner.water || '',
-                  otherDrinks: log.dinner.otherDrinks || ''
-                } : undefined,
-                snacks: {
-                  midMorning: log.midMorningSnack ? {
-                    time: log.midMorningSnack.time || '',
-                    items: log.midMorningSnack.items || '',
-                    drinks: log.midMorningSnack.drinks || ''
-                  } : undefined,
-                  midDay: log.midDaySnack ? {
-                    time: log.midDaySnack.time || '',
-                    items: log.midDaySnack.items || '',
-                    drinks: log.midDaySnack.drinks || ''
-                  } : undefined,
-                  nighttime: log.nighttimeSnack ? {
-                    time: log.nighttimeSnack.time || '',
-                    items: log.nighttimeSnack.items || '',
-                    drinks: log.nighttimeSnack.drinks || ''
-                  } : undefined
+                breakfast: log.breakfast || {
+                  time: '',
+                  meatDairy: '',
+                  vegetablesFruits: '',
+                  breadsCerealsGrains: '',
+                  fats: '',
+                  candySweets: '',
+                  waterIntake: '',
+                  otherDrinks: ''
                 },
-                health: {
-                  bowelMovements: log.bowelMovements || '',
-                  exercise: log.exercise || '',
-                  waterIntake: log.dailyWaterIntake || '',
-                  sleepQuality: log.sleepQuality || '',
-                  sleepHours: log.sleepHours || '',
-                  notes: log.notes || ''
+                lunch: log.lunch || {
+                  time: '',
+                  meatDairy: '',
+                  vegetablesFruits: '',
+                  breadsCerealsGrains: '',
+                  fats: '',
+                  candySweets: '',
+                  waterIntake: '',
+                  otherDrinks: ''
                 },
+                dinner: log.dinner || {
+                  time: '',
+                  meatDairy: '',
+                  vegetablesFruits: '',
+                  breadsCerealsGrains: '',
+                  fats: '',
+                  candySweets: '',
+                  waterIntake: '',
+                  otherDrinks: ''
+                },
+                midMorningSnack: log.midMorningSnack || {
+                  time: '',
+                  snack: ''
+                },
+                midDaySnack: log.midDaySnack || {
+                  time: '',
+                  snack: ''
+                },
+                nighttimeSnack: log.nighttimeSnack || {
+                  time: '',
+                  snack: ''
+                },
+                bowelMovements: log.bowelMovements || '',
+                exercise: log.exercise || '',
+                dailyWaterIntake: log.dailyWaterIntake || '',
+                sleepQuality: log.sleepQuality || 0,
+                sleepHours: log.sleepHours || '',
+                notes: log.notes || '',
                 createdAt: log.createdAt || new Date().toISOString(),
                 updatedAt: log.updatedAt || new Date().toISOString()
               };
@@ -202,7 +195,8 @@ export function useExport(options: UseExportOptions = {}) {
 
   // Main export function
   const exportData = useCallback(async (
-    exportOptions: Omit<ExportOptions, 'dateRange'> & {
+    exportOptions: Omit<ExportOptions, 'dateRange' | 'exportFormat'> & {
+      format: 'pdf' | 'text' | 'json';
       datePreset: DatePreset;
       customStartDate?: string;
       customEndDate?: string;
@@ -234,7 +228,7 @@ export function useExport(options: UseExportOptions = {}) {
 
       // Prepare export options
       const fullExportOptions: ExportOptions = {
-        format: exportOptions.format,
+        exportFormat: exportOptions.format,
         dateRange,
         includeMetadata: exportOptions.includeMetadata ?? true,
         includeHealthMetrics: exportOptions.includeHealthMetrics ?? true,
@@ -291,28 +285,28 @@ export function useExport(options: UseExportOptions = {}) {
   }, [getDateRange, fetchFoodLogs]);
 
   // Quick export functions for common use cases
-  const exportToday = useCallback(async (format: 'pdf' | 'text' | 'json' = 'pdf') => {
+  const exportToday = useCallback(async (exportFormat: 'pdf' | 'text' | 'json' = 'pdf') => {
     return exportData({
-      format,
+      format: exportFormat,
       datePreset: 'today',
       title: `Daily Food Log - ${format(new Date(), 'MMM d, yyyy')}`
     });
   }, [exportData]);
 
-  const exportThisWeek = useCallback(async (format: 'pdf' | 'text' | 'json' = 'pdf') => {
+  const exportThisWeek = useCallback(async (exportFormat: 'pdf' | 'text' | 'json' = 'pdf') => {
     const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
     const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
     
     return exportData({
-      format,
+      format: exportFormat,
       datePreset: 'thisWeek',
       title: `Weekly Food Log - ${format(weekStart, 'MMM d')} to ${format(weekEnd, 'MMM d, yyyy')}`
     });
   }, [exportData]);
 
-  const exportThisMonth = useCallback(async (format: 'pdf' | 'text' | 'json' = 'pdf') => {
+  const exportThisMonth = useCallback(async (exportFormat: 'pdf' | 'text' | 'json' = 'pdf') => {
     return exportData({
-      format,
+      format: exportFormat,
       datePreset: 'thisMonth',
       title: `Monthly Food Log - ${format(new Date(), 'MMMM yyyy')}`
     });
