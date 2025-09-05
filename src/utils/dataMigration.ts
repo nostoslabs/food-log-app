@@ -154,7 +154,62 @@ export async function clearFirestoreSleepDataAlpha(userId: string): Promise<{
 }
 
 /**
+ * Sync all localStorage data to Firestore when user authenticates
+ */
+export async function syncLocalStorageToFirestore(userId: string): Promise<{
+  syncedCount: number;
+  totalFound: number;
+  errors: string[];
+}> {
+  console.log('[DATA SYNC] Starting localStorage to Firestore sync for user:', userId);
+  
+  let syncedCount = 0;
+  let totalFound = 0;
+  const errors: string[] = [];
+  
+  try {
+    // Scan all localStorage for food logs
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('foodLog_')) {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            totalFound++;
+            const foodLog = JSON.parse(stored);
+            
+            // Ensure the log has the userId
+            const logWithUser = { ...foodLog, userId };
+            
+            // Sync to Firestore
+            const result = await firestoreService.upsertFoodLog(logWithUser);
+            if (result.success) {
+              syncedCount++;
+              console.log(`[DATA SYNC] Synced ${foodLog.date} to Firestore`);
+            } else {
+              errors.push(`Failed to sync ${foodLog.date}: ${result.error}`);
+            }
+            
+          } catch (parseError) {
+            errors.push(`Failed to parse localStorage entry ${key}: ${parseError}`);
+          }
+        }
+      }
+    }
+    
+    console.log(`[DATA SYNC] Sync completed: ${syncedCount}/${totalFound} entries synced`);
+    return { syncedCount, totalFound, errors };
+    
+  } catch (error) {
+    console.error('[DATA SYNC] Error during localStorage sync:', error);
+    errors.push(error instanceof Error ? error.message : 'Unknown sync error');
+    return { syncedCount, totalFound, errors };
+  }
+}
+
+/**
  * Comprehensive alpha data cleanup and migration
+ * NOTE: This is for alpha cleanup only, not regular authentication
  */
 export async function performAlphaDataMigration(userId?: string): Promise<{
   localStorageMigration: { migratedCount: number; totalChecked: number };

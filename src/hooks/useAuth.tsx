@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, createContext, type ReactNode } from 'react';
 import { authService } from '../services/auth';
-import { performAlphaDataMigration } from '../utils/dataMigration';
+import { syncLocalStorageToFirestore } from '../utils/dataMigration';
 import type { User, AuthState } from '../types';
 
 // Create the auth context
@@ -130,14 +130,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error: null
       }));
 
-      // Trigger alpha data migration for authenticated users
+      // Sync localStorage data to Firestore for authenticated users
       if (user) {
         try {
-          console.log('[ALPHA MIGRATION] User authenticated, starting data migration...');
-          await performAlphaDataMigration(user.uid);
-          console.log('[ALPHA MIGRATION] Migration completed successfully');
+          console.log('[DATA SYNC] User authenticated, syncing localStorage to Firestore...');
+          const result = await syncLocalStorageToFirestore(user.uid);
+          console.log(`[DATA SYNC] Sync completed: ${result.syncedCount}/${result.totalFound} entries synced`);
+          if (result.errors.length > 0) {
+            console.warn('[DATA SYNC] Some entries failed to sync:', result.errors);
+          }
         } catch (error) {
-          console.error('[ALPHA MIGRATION] Migration failed:', error);
+          console.error('[DATA SYNC] Sync failed:', error);
         }
       }
     });
