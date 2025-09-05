@@ -11,6 +11,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Test coverage**: `npm run test:coverage`
 - **Preview**: `npm run preview` (preview production build)
 
+## ⚠️ CRITICAL: Pre-Commit Workflow
+
+**ALWAYS run production build before committing to prevent deployment failures:**
+
+1. **Make your changes**
+2. **Test locally**: `npm run dev` 
+3. **Run production build**: `npm run build` ✅ **REQUIRED**
+4. **Fix any TypeScript errors** that appear in the build
+5. **Commit only after successful build**: `git add . && git commit -m "message"`
+6. **Push**: `git push`
+
+**Common TypeScript issues to watch for:**
+- Unused imports/variables (remove them)
+- Missing imports (add them) 
+- Type mismatches in component props
+- Undefined object properties (use null checks: `value || 0` or `value?.property`)
+
+The development server (`npm run dev`) may be more permissive than the production build, so the production build is the source of truth for deployment readiness.
+
 ## Architecture Overview
 
 ### Tech Stack
