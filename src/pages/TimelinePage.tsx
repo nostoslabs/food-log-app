@@ -5,6 +5,7 @@ import { RefreshCw, Calendar, Loader2 } from 'lucide-react';
 import { useDateNavigation, useTimelineData, useFoodLog } from '../hooks';
 import { TimelineEntry } from '../components/timeline/TimelineEntry';
 import { QuickMealEntry, QuickSnackEntry, QuickHealthMetricsEntry, QuickSleepEntry } from '../components';
+import { validateFoodLog } from '../schemas/foodLogSchema';
 import type { MealData, SnackData } from '../types';
 
 interface ModalState {
@@ -78,83 +79,103 @@ const TimelinePage: React.FC = () => {
     });
   };
 
-  // Save handlers
+  // CRITICAL: Enhanced save handlers with data validation for patient safety
   const handleMealSave = async (mealType: 'breakfast' | 'lunch' | 'dinner', mealData: MealData) => {
     try {
+      // Validate data before saving
+      const testLog = { ...foodLog, [mealType]: mealData };
+      const validation = validateFoodLog(testLog);
+      if (!validation.success) {
+        console.error('Meal validation failed:', validation.errors);
+        setSaveSuccess(`Validation error: ${validation.errors?.[0] || 'Invalid data'}`);
+        setTimeout(() => setSaveSuccess(null), 3000);
+        return;
+      }
+      
       Object.entries(mealData).forEach(([field, value]) => {
         updateMeal(mealType, field as keyof MealData, value as string);
       });
-      // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess(`${mealType.charAt(0).toUpperCase() + mealType.slice(1)} updated!`);
-      // Refresh timeline data after a short delay to show updates
-      setTimeout(() => {
-        refreshTimelineData();
-      }, 500);
-      setTimeout(() => {
-        setSaveSuccess(null);
-      }, 2000);
+      setTimeout(() => setSaveSuccess(null), 2000);
     } catch (error) {
       console.error('Failed to save meal:', error);
+      setSaveSuccess('Failed to save meal. Check connection.');
+      setTimeout(() => setSaveSuccess(null), 3000);
     }
   };
 
   const handleSnackSave = async (snackType: 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack', snackData: SnackData) => {
     try {
+      // Validate data before saving
+      const testLog = { ...foodLog, [snackType]: snackData };
+      const validation = validateFoodLog(testLog);
+      if (!validation.success) {
+        console.error('Snack validation failed:', validation.errors);
+        setSaveSuccess(`Validation error: ${validation.errors?.[0] || 'Invalid data'}`);
+        setTimeout(() => setSaveSuccess(null), 3000);
+        return;
+      }
+      
       Object.entries(snackData).forEach(([field, value]) => {
         updateSnack(snackType, field as keyof SnackData, value as string);
       });
-      // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess('Snack updated!');
-      // Refresh timeline data after a short delay to show updates
-      setTimeout(() => {
-        refreshTimelineData();
-      }, 500);
-      setTimeout(() => {
-        setSaveSuccess(null);
-      }, 2000);
+      setTimeout(() => setSaveSuccess(null), 2000);
     } catch (error) {
       console.error('Failed to save snack:', error);
+      setSaveSuccess('Failed to save snack. Check connection.');
+      setTimeout(() => setSaveSuccess(null), 3000);
     }
   };
 
   const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string; dailyWaterIntake: string }) => {
     try {
+      // Validate data before saving
+      const testLog = { ...foodLog, ...healthData };
+      const validation = validateFoodLog(testLog);
+      if (!validation.success) {
+        console.error('Health metrics validation failed:', validation.errors);
+        setSaveSuccess(`Validation error: ${validation.errors?.[0] || 'Invalid data'}`);
+        setTimeout(() => setSaveSuccess(null), 3000);
+        return;
+      }
+      
       Object.entries(healthData).forEach(([field, value]) => {
         updateHealthMetric(field as 'bowelMovements' | 'exercise' | 'dailyWaterIntake', value);
       });
-      // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess('Health metrics updated!');
-      // Refresh timeline data after a short delay to show updates
-      setTimeout(() => {
-        refreshTimelineData();
-      }, 500);
-      setTimeout(() => {
-        setSaveSuccess(null);
-      }, 2000);
+      setTimeout(() => setSaveSuccess(null), 2000);
     } catch (error) {
       console.error('Failed to save health metrics:', error);
+      setSaveSuccess('Failed to save health metrics. Check connection.');
+      setTimeout(() => setSaveSuccess(null), 3000);
     }
   };
 
   const handleSleepSave = async (sleepData: { sleepQuality: number; sleepHours: string }) => {
     try {
+      // CRITICAL: Validate sleep data with healthcare standards
+      const testLog = { ...foodLog, sleepQuality: sleepData.sleepQuality, sleepHours: sleepData.sleepHours };
+      const validation = validateFoodLog(testLog);
+      if (!validation.success) {
+        console.error('Sleep validation failed:', validation.errors);
+        setSaveSuccess(`Sleep data error: ${validation.errors?.[0] || 'Invalid data'}`);
+        setTimeout(() => setSaveSuccess(null), 3000);
+        return;
+      }
+      
       updateHealthMetric('sleepQuality', sleepData.sleepQuality);
       updateHealthMetric('sleepHours', sleepData.sleepHours);
-      // Force save to ensure data is persisted immediately
       await forceSave();
       setSaveSuccess('Sleep data updated!');
-      // Refresh timeline data after a short delay to show updates
-      setTimeout(() => {
-        refreshTimelineData();
-      }, 500);
-      setTimeout(() => {
-        setSaveSuccess(null);
-      }, 2000);
+      setTimeout(() => setSaveSuccess(null), 2000);
     } catch (error) {
       console.error('Failed to save sleep data:', error);
+      setSaveSuccess('Failed to save sleep data. Check connection.');
+      setTimeout(() => setSaveSuccess(null), 3000);
     }
   };
 
@@ -287,7 +308,7 @@ const TimelinePage: React.FC = () => {
 
                   {/* Day's Entries */}
                   <div className="space-y-3 mb-6">
-                    {dayData.entries.map((entry, entryIndex) => (
+                    {dayData.entries.map((entry: any, entryIndex: number) => (
                       <TimelineEntry
                         key={`${dayData.id}-${entryIndex}`}
                         time={entry.time}

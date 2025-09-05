@@ -156,12 +156,34 @@ export function useFoodLog(date: Date) {
     });
   };
 
+  // Validate sleep quality to ensure it's in 0-100 range
+  const validateSleepQuality = (value: number): number => {
+    if (value < 0) return 0;
+    if (value > 100) return 100;
+    
+    // Convert old 1-5 scale to percentage if detected
+    if (value > 0 && value <= 5) {
+      const converted = value * 20;
+      console.warn(`[DATA VALIDATION] Converting sleep quality ${value}/5 to ${converted}% for data integrity`);
+      return converted;
+    }
+    
+    return value;
+  };
+
   // Update health metrics
   const updateHealthMetric = (field: keyof Omit<FoodLog, 'id' | 'userId' | 'date' | 'breakfast' | 'lunch' | 'dinner' | 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack' | 'createdAt' | 'updatedAt'>, value: string | number) => {
     setFoodLog(prev => {
+      let validatedValue = value;
+      
+      // Apply validation for sleep quality
+      if (field === 'sleepQuality' && typeof value === 'number') {
+        validatedValue = validateSleepQuality(value);
+      }
+      
       const updated = {
         ...prev,
-        [field]: value,
+        [field]: validatedValue,
         updatedAt: new Date().toISOString()
       };
       

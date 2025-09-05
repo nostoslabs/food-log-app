@@ -4,6 +4,7 @@ import type { FoodLog, MealData, SnackData } from '../types';
 import { firestoreService } from '../services/firestore';
 import { useAuth } from './useAuth';
 import { getDateKey, loadFromLocalStorage } from '../utils';
+import { validateAndMigrateFoodLog } from '../schemas/foodLogSchema';
 
 export interface TimelineEntryData {
   time: string;
@@ -137,11 +138,8 @@ const convertFoodLogToTimelineEntries = (foodLog: FoodLog): TimelineEntryData[] 
     const sleepContent = [];
     if (hasContent(foodLog.sleepHours)) sleepContent.push(`${foodLog.sleepHours}`);
     if (foodLog.sleepQuality > 0) {
-      // Handle both old scale (1-5) and new scale (0-100)
-      const qualityDisplay = foodLog.sleepQuality <= 5 
-        ? `Quality: ${foodLog.sleepQuality}/5` 
-        : `Quality: ${foodLog.sleepQuality}%`;
-      sleepContent.push(qualityDisplay);
+      // Display sleep quality as percentage (data should be migrated to 0-100 range)
+      sleepContent.push(`Quality: ${foodLog.sleepQuality}%`);
     }
     
     entries.push({
@@ -183,13 +181,32 @@ export function useTimelineData(days: number = 7) {
           // Try to load from Firestore first
           const result = await firestoreService.getFoodLogByDate(user.uid, dateKey);
           if (result.success && result.data) {
-            foodLog = result.data;
+            // CRITICAL: Validate and migrate data to prevent display inconsistencies
+            const validation = validateAndMigrateFoodLog(result.data);
+            if (validation.success && validation.data) {
+              foodLog = validation.data;
+            } else {
+              console.error(`Timeline data validation failed for ${dateKey}:`, validation.errors);
+              // Fall back to localStorage
+              foodLog = loadFromLocalStorage(date);
+            }
           }
         }
 
         // If no Firestore data, try local storage
         if (!foodLog) {
-          foodLog = loadFromLocalStorage(date);
+          const localLog = loadFromLocalStorage(date);
+          if (localLog) {
+            // CRITICAL: Also validate localStorage data
+            const validation = validateAndMigrateFoodLog(localLog);
+            if (validation.success && validation.data) {
+              foodLog = validation.data;
+            } else {
+              console.error(`Timeline localStorage validation failed for ${dateKey}:`, validation.errors);
+              // Use raw data if validation fails (better than no data)
+              foodLog = localLog;
+            }
+          }
         }
 
         // Convert to timeline entries if we have data

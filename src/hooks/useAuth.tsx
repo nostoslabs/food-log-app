@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext, createContext, type ReactNode } from 'react';
 import { authService } from '../services/auth';
+import { performAlphaDataMigration } from '../utils/dataMigration';
 import type { User, AuthState } from '../types';
 
 // Create the auth context
@@ -121,13 +122,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Listen to auth state changes
   useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged((user) => {
+    const unsubscribe = authService.onAuthStateChanged(async (user) => {
       setAuthState(prev => ({
         ...prev,
         user,
         loading: false,
         error: null
       }));
+
+      // Trigger alpha data migration for authenticated users
+      if (user) {
+        try {
+          console.log('[ALPHA MIGRATION] User authenticated, starting data migration...');
+          await performAlphaDataMigration(user.uid);
+          console.log('[ALPHA MIGRATION] Migration completed successfully');
+        } catch (error) {
+          console.error('[ALPHA MIGRATION] Migration failed:', error);
+        }
+      }
     });
 
     return unsubscribe;
