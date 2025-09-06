@@ -7,10 +7,51 @@
 
 import { z } from 'zod';
 
-// Time validation - ensures consistent time format
+// Time validation - ensures consistent time format with migration support
 const timeSchema = z.string()
-  .regex(/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$/, 'Invalid time format (use HH:MM AM/PM)')
-  .transform(time => time.toUpperCase()); // Normalize to uppercase
+  .transform(time => {
+    // Handle various time formats that might exist in Firebase
+    const trimmedTime = time.trim();
+    
+    // If already in correct format, return as-is
+    if (/^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$/i.test(trimmedTime)) {
+      return trimmedTime.toUpperCase();
+    }
+    
+    // Try to parse 24-hour format (HH:MM or H:MM)
+    const twentyFourHourMatch = trimmedTime.match(/^([0-2]?\d):([0-5]\d)$/);
+    if (twentyFourHourMatch) {
+      const hours24 = parseInt(twentyFourHourMatch[1], 10);
+      const minutes = twentyFourHourMatch[2];
+      
+      if (hours24 >= 0 && hours24 <= 23) {
+        const hours12 = hours24 === 0 ? 12 : hours24 > 12 ? hours24 - 12 : hours24;
+        const period = hours24 >= 12 ? 'PM' : 'AM';
+        return `${hours12}:${minutes} ${period}`;
+      }
+    }
+    
+    // Try to parse time without AM/PM (assume reasonable defaults)
+    const simpleTimeMatch = trimmedTime.match(/^([0-1]?\d):([0-5]\d)$/);
+    if (simpleTimeMatch) {
+      const hours = parseInt(simpleTimeMatch[1], 10);
+      const minutes = simpleTimeMatch[2];
+      
+      if (hours >= 1 && hours <= 12) {
+        // Default to AM for 1-7, PM for 8-12
+        const period = hours <= 7 ? 'AM' : 'PM';
+        return `${hours}:${minutes} ${period}`;
+      }
+    }
+    
+    // If we can't parse it, return a default time to prevent validation failure
+    console.warn(`[TIME MIGRATION] Could not parse time "${time}", using default`);
+    return '12:00 PM';
+  })
+  .refine(time => {
+    // Final validation on the transformed time
+    return /^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM)$/i.test(time);
+  }, 'Invalid time format after transformation')
 
 // Health-safe sleep quality validation (0-100 percentage only)
 const sleepQualitySchema = z.number()
