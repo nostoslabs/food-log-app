@@ -50,7 +50,7 @@ const AppContent: React.FC = () => {
   const showBottomTabs = !hideBottomTabs;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col ios-scroll-fix">
       {/* Legacy Navigation Bar - only show on legacy and privacy pages */}
       {showTopNavigation && (
         <nav className="gradient-header">

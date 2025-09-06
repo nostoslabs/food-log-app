@@ -42,12 +42,7 @@ const TimelinePage: React.FC = () => {
     }
   };
 
-  const handlePullToRefresh = (e: React.TouchEvent) => {
-    // Simple pull-to-refresh logic
-    if (e.touches[0]?.clientY > 100) {
-      handleRefresh();
-    }
-  };
+  // Removed problematic pull-to-refresh handler that interfered with iOS scrolling
 
   // Map timeline entry title to snack type
   const getSnackTypeFromTitle = (title: string): 'midMorningSnack' | 'midDaySnack' | 'nighttimeSnack' => {
@@ -267,7 +262,11 @@ const TimelinePage: React.FC = () => {
       {!loading && (
         <div 
           className="flex-1 px-4 space-y-4"
-          onTouchMove={handlePullToRefresh}
+          style={{
+            overscrollBehavior: 'none',
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-y'
+          }}
         >
           {timelineData.length === 0 ? (
             <motion.div 

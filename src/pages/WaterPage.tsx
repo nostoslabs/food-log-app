@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Droplets, 
@@ -8,16 +8,22 @@ import {
   Clock
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { usePreferences } from '../hooks/usePreferences';
 
 const WaterPage: React.FC = () => {
-  const [customAmount, setCustomAmount] = useState(32);
+  const { preferences, defaultWaterAmount, dailyWaterGoal } = usePreferences();
+  const [customAmount, setCustomAmount] = useState(defaultWaterAmount);
   const [dailyIntake, setDailyIntake] = useState(48);
-  const [dailyGoal] = useState(128); // This will come from preferences
   const [recentEntries, setRecentEntries] = useState([
     { time: '2:30 PM', amount: 16, id: '1' },
     { time: '12:15 PM', amount: 32, id: '2' },
     { time: '9:00 AM', amount: 16, id: '3' },
   ]);
+
+  // Update custom amount when preferences load
+  useEffect(() => {
+    setCustomAmount(defaultWaterAmount);
+  }, [defaultWaterAmount]);
 
   const presetAmounts = [8, 16, 20, 32];
 
@@ -38,7 +44,7 @@ const WaterPage: React.FC = () => {
     }
   };
 
-  const progressPercentage = Math.min((dailyIntake / dailyGoal) * 100, 100);
+  const progressPercentage = Math.min((dailyIntake / dailyWaterGoal) * 100, 100);
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-cyan-50 to-blue-50 pb-20">
@@ -120,7 +126,7 @@ const WaterPage: React.FC = () => {
         {/* Goal Progress */}
         <div className="text-center">
           <p className="text-sm text-gray-600 mb-1">
-            {dailyIntake} oz of {dailyGoal} oz daily goal
+            {dailyIntake} oz of {dailyWaterGoal} oz daily goal
           </p>
           <div className="flex items-center justify-center gap-2">
             <Target className="w-4 h-4 text-cyan-500" />
