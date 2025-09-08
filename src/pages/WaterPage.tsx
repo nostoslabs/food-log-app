@@ -9,16 +9,28 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { usePreferences } from '../hooks/usePreferences';
+import { useDateNavigation, useFoodLog } from '../hooks';
 
 const WaterPage: React.FC = () => {
   const { preferences, defaultWaterAmount, dailyWaterGoal } = usePreferences();
+  const { currentDate } = useDateNavigation();
+  const { foodLog, updateHealthMetric } = useFoodLog(currentDate);
+  
   const [customAmount, setCustomAmount] = useState(defaultWaterAmount);
-  const [dailyIntake, setDailyIntake] = useState(48);
   const [recentEntries, setRecentEntries] = useState([
     { time: '2:30 PM', amount: 16, id: '1' },
     { time: '12:15 PM', amount: 32, id: '2' },
     { time: '9:00 AM', amount: 16, id: '3' },
   ]);
+
+  // Parse current daily water intake from stored food log
+  const parseWaterIntake = (waterStr: string): number => {
+    if (!waterStr) return 0;
+    const match = waterStr.match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
+  };
+
+  const dailyIntake = parseWaterIntake(foodLog.dailyWaterIntake);
 
   // Update custom amount when preferences load
   useEffect(() => {
@@ -34,8 +46,12 @@ const WaterPage: React.FC = () => {
       time: format(new Date(), 'h:mm a'),
     };
     
+    // Update local UI state
     setRecentEntries(prev => [newEntry, ...prev]);
-    setDailyIntake(prev => prev + amount);
+    
+    // Save to persistent storage - add to existing daily intake
+    const newTotalIntake = dailyIntake + amount;
+    updateHealthMetric('dailyWaterIntake', `${newTotalIntake} oz`);
   };
 
   const handleCustomAdd = () => {

@@ -261,12 +261,7 @@ const TimelinePage: React.FC = () => {
       {/* Timeline */}
       {!loading && (
         <div 
-          className="flex-1 px-4 space-y-4"
-          style={{
-            overscrollBehavior: 'none',
-            WebkitOverflowScrolling: 'touch',
-            touchAction: 'pan-y'
-          }}
+          className="flex-1 px-4 space-y-4 timeline-container"
         >
           {timelineData.length === 0 ? (
             <motion.div 
@@ -299,7 +294,7 @@ const TimelinePage: React.FC = () => {
                   {/* Date Header */}
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-px bg-gray-200 flex-shrink-0" />
-                    <p className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+                    <p className="text-base font-bold text-gray-800 whitespace-nowrap">
                       {dayData.displayDate}
                     </p>
                     <div className="w-full h-px bg-gray-200" />

@@ -46,11 +46,11 @@ const LogPage: React.FC = () => {
     }
   };
 
-  const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string; dailyWaterIntake: string }) => {
+  const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string }) => {
     try {
       // Update each health metric field
       Object.entries(healthData).forEach(([field, value]) => {
-        updateHealthMetric(field as 'bowelMovements' | 'exercise' | 'dailyWaterIntake', value);
+        updateHealthMetric(field as 'bowelMovements' | 'exercise', value);
       });
       setSaveSuccess('Health metrics saved successfully!');
       setTimeout(() => setSaveSuccess(null), 3000);
@@ -340,14 +340,14 @@ const LogPage: React.FC = () => {
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-gray-900">Health Tracking</h3>
-              {(foodLog.bowelMovements || foodLog.exercise || foodLog.dailyWaterIntake) && (
+              {(foodLog.bowelMovements || foodLog.exercise) && (
                 <CheckCircle className="w-4 h-4 text-green-500" />
               )}
             </div>
             <p className="text-sm text-gray-500">
-              {(foodLog.bowelMovements || foodLog.exercise || foodLog.dailyWaterIntake) 
+              {(foodLog.bowelMovements || foodLog.exercise) 
                 ? 'Logged - tap to edit' 
-                : 'Add bowel movements, exercise, water intake'}
+                : 'Add bowel movements, exercise'}
             </p>
           </div>
           <Plus className="w-5 h-5 text-gray-400" />
@@ -421,8 +421,7 @@ const LogPage: React.FC = () => {
           <QuickHealthMetricsEntry
             initialData={{
               bowelMovements: foodLog.bowelMovements || '',
-              exercise: foodLog.exercise || '',
-              dailyWaterIntake: foodLog.dailyWaterIntake || ''
+              exercise: foodLog.exercise || ''
             }}
             onSave={handleHealthMetricsSave}
             onClose={() => setActiveModal(null)}

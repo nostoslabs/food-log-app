@@ -6,7 +6,6 @@ import { TextAreaField } from '../ui';
 interface HealthMetricsData {
   bowelMovements: string;
   exercise: string;
-  dailyWaterIntake: string;
 }
 
 interface QuickHealthMetricsEntryProps {
@@ -23,8 +22,7 @@ export const QuickHealthMetricsEntry: React.FC<QuickHealthMetricsEntryProps> = (
 }) => {
   const [healthData, setHealthData] = useState<HealthMetricsData>(initialData || {
     bowelMovements: '',
-    exercise: '',
-    dailyWaterIntake: ''
+    exercise: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,8 +47,7 @@ export const QuickHealthMetricsEntry: React.FC<QuickHealthMetricsEntryProps> = (
   const handleClear = () => {
     const clearedData = {
       bowelMovements: '',
-      exercise: '',
-      dailyWaterIntake: ''
+      exercise: ''
     };
     setHealthData(clearedData);
     setShowClearConfirmation(false);
@@ -116,13 +113,6 @@ export const QuickHealthMetricsEntry: React.FC<QuickHealthMetricsEntryProps> = (
                 rows={2}
               />
               
-              <TextAreaField
-                label="💧 Daily Water Intake (oz)"
-                value={healthData.dailyWaterIntake}
-                onChange={(value) => updateField('dailyWaterIntake', value)}
-                placeholder="e.g., 64 oz"
-                rows={2}
-              />
             </div>
           </div>
         </div>

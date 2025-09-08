@@ -64,11 +64,16 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  html, body {
+  html {
     overflow-x: hidden;
-    /* Prevent iOS pull-to-refresh */
-    overscroll-behavior: none;
+    /* Stronger iOS pull-to-refresh prevention */
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
     -webkit-overflow-scrolling: touch;
+    /* Prevent zoom and text selection */
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   body {
@@ -77,10 +82,15 @@
     min-height: 100vh;
     margin: 0;
     width: 100%;
-    /* Additional iOS fixes */
-    touch-action: pan-x pan-y;
+    overflow-x: hidden;
+    /* Critical iOS Safari fixes */
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y !important;
     -webkit-touch-callout: none;
     -webkit-text-size-adjust: 100%;
+    position: relative;
   }
   
   @keyframes gradientShift {
@@ -378,15 +388,29 @@
 
   /* iOS-specific fixes for touch scrolling */
   .ios-scroll-fix {
-    overscroll-behavior: none;
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    touch-action: pan-y !important;
     -webkit-touch-callout: none;
+    position: relative;
   }
 
-  /* Prevent pull-to-refresh on main app container */
-  #root {
-    overscroll-behavior-y: none;
-    touch-action: pan-x pan-y;
+  /* Critical: Prevent pull-to-refresh on ALL containers */
+  #root, .main-container {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+    touch-action: pan-y !important;
+    position: relative;
+  }
+
+  /* Timeline-specific stronger fixes */
+  .timeline-container {
+    overscroll-behavior: none !important;
+    overscroll-behavior-y: none !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y !important;
+    transform: translateZ(0); /* Force hardware acceleration */
+    will-change: scroll-position;
   }
 }

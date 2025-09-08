@@ -217,7 +217,7 @@ export function useTimelineData(days: number = 7) {
           timelineEntries.push({
             id: `day-${dateKey}`,
             date: dateKey,
-            displayDate: format(date, 'MMM d, yyyy'),
+            displayDate: format(date, 'EEEE, MMM d, yyyy'),
             entries
           });
         }
