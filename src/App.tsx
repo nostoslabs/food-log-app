@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
-import { LogOut, User, Loader2 } from 'lucide-react';
-import { AuthProvider, useAuth } from './hooks/useAuth';
-import AuthForm from './components/auth/AuthForm';
-import { BottomTabs } from './components';
-import ErrorBoundary from './components/ErrorBoundary';
+import { AnimatePresence,motion } from 'framer-motion';
+import { Loader2,LogOut, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
-// Pages
-import TimelinePage from './pages/TimelinePage';
-import LogPage from './pages/LogPage';
-import WaterPage from './pages/WaterPage';
+import { BottomTabs } from './components';
+import AuthForm from './components/auth/AuthForm';
+import ErrorBoundary from './components/ErrorBoundary';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import AnalyticsPage from './pages/AnalyticsPage';
+import FoodLogPage from './pages/FoodLogPage';
+import LogPage from './pages/LogPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
-import FoodLogPage from './pages/FoodLogPage';
 import SignInPage from './pages/SignInPage';
-import PrivacyPolicy from './pages/PrivacyPolicy';
+// Pages
+import TimelinePage from './pages/TimelinePage';
+import WaterPage from './pages/WaterPage';
 
 const AppContent: React.FC = () => {
   const { user, loading, signOut } = useAuth();
@@ -50,7 +50,7 @@ const AppContent: React.FC = () => {
   const showBottomTabs = !hideBottomTabs;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col ios-scroll-fix">
+    <div className="h-screen bg-background flex flex-col ios-scroll-fix overflow-hidden">
       {/* Legacy Navigation Bar - only show on legacy and privacy pages */}
       {showTopNavigation && (
         <nav className="gradient-header">
@@ -108,7 +108,7 @@ const AppContent: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 overflow-hidden">
         <Routes>
           <Route path="/" element={<TimelinePage />} />
           <Route path="/add" element={<LogPage />} />

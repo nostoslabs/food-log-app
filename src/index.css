@@ -66,9 +66,7 @@
   
   html {
     overflow-x: hidden;
-    /* Stronger iOS pull-to-refresh prevention */
-    overscroll-behavior: none !important;
-    overscroll-behavior-y: none !important;
+    /* Enable native scrolling behavior globally */
     -webkit-overflow-scrolling: touch;
     /* Prevent zoom and text selection */
     -webkit-text-size-adjust: 100%;
@@ -79,15 +77,12 @@
   body {
     background: hsl(var(--background));
     color: hsl(var(--foreground));
-    min-height: 100vh;
+    height: 100vh;
     margin: 0;
     width: 100%;
-    overflow-x: hidden;
-    /* Critical iOS Safari fixes */
-    overscroll-behavior: none !important;
-    overscroll-behavior-y: none !important;
+    overflow: hidden;
+    /* Enable natural scrolling behavior on body */
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-y !important;
     -webkit-touch-callout: none;
     -webkit-text-size-adjust: 100%;
     position: relative;
@@ -100,7 +95,8 @@
   }
   
   #root {
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
   }
 }
 
@@ -396,8 +392,8 @@
     position: relative;
   }
 
-  /* Critical: Prevent pull-to-refresh on ALL containers */
-  #root, .main-container {
+  /* Apply pull-to-refresh prevention only to specific containers that need it */
+  .main-container {
     overscroll-behavior: none !important;
     overscroll-behavior-y: none !important;
     touch-action: pan-y !important;

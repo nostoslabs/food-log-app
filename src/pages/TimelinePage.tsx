@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import { RefreshCw, Calendar, Loader2 } from 'lucide-react';
-import { useDateNavigation, useTimelineData, useFoodLog } from '../hooks';
+import { AnimatePresence,motion } from 'framer-motion';
+import { Calendar, Loader2,RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+
+import { QuickHealthMetricsEntry, QuickMealEntry, QuickSleepEntry,QuickSnackEntry } from '../components';
 import { TimelineEntry } from '../components/timeline/TimelineEntry';
-import { QuickMealEntry, QuickSnackEntry, QuickHealthMetricsEntry, QuickSleepEntry } from '../components';
+import { useDateNavigation, useFoodLog,useTimelineData } from '../hooks';
 import { validateFoodLog } from '../schemas/foodLogSchema';
 import type { MealData, SnackData } from '../types';
 
@@ -20,7 +21,8 @@ const TimelinePage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [activeModal, setActiveModal] = useState<ModalState | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
-  const { timelineData, loading, error, refreshTimelineData, getDaySummary } = useTimelineData(7);
+  // Load a wider range so multiple weeks/months are visible
+  const { timelineData, loading, error, refreshTimelineData, getDaySummary } = useTimelineData(90);
   
   // Use food log hook for current date to maintain stable context
   const { 
@@ -175,7 +177,7 @@ const TimelinePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-20">
+    <div className="flex flex-col h-screen bg-background pb-24 overflow-hidden">
       {/* Compact Header */}
       <motion.div 
         className="sticky top-0 z-40 bg-gradient-to-r from-brand-orange to-red-500 text-white shadow-lg"
@@ -260,8 +262,8 @@ const TimelinePage: React.FC = () => {
 
       {/* Timeline */}
       {!loading && (
-        <div 
-          className="flex-1 px-4 space-y-4 timeline-container"
+        <div
+          className="flex-1 px-4 space-y-4 overflow-y-auto timeline-container"
         >
           {timelineData.length === 0 ? (
             <motion.div 
