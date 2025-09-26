@@ -105,3 +105,20 @@ export interface SnackSectionProps {
   displayName: string;
   onUpdate: (field: keyof SnackData, value: string) => void;
 }
+
+// Entry Style Types - Domain Layer
+export type EntryType =
+  | 'breakfast'
+  | 'lunch'
+  | 'dinner'
+  | 'snack'
+  | 'water'
+  | 'exercise'
+  | 'sleep'
+  | 'health';
+
+export interface EntryStyle {
+  icon: any; // LucideIcon type
+  iconClasses: string;
+  containerClasses: string;
+}

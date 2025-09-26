@@ -1,42 +1,19 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Utensils, 
-  Droplets, 
-  Coffee, 
-  Clock,
-  Zap
-} from 'lucide-react';
+import { Droplets } from 'lucide-react';
+import React from 'react';
+
+import { getEntryStyle } from '../../config/entryStyles';
+import type { EntryType } from '../../types';
 
 interface TimelineEntryProps {
   time: string;
-  type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'water' | 'exercise' | 'sleep';
+  type: EntryType;
   title: string;
   content: string;
   waterIntake?: number;
   onClick?: () => void;
 }
 
-const getIconAndColor = (type: TimelineEntryProps['type']) => {
-  switch (type) {
-    case 'breakfast':
-      return { icon: Coffee, color: 'bg-yellow-100 text-yellow-600 border-yellow-200' };
-    case 'lunch':
-      return { icon: Utensils, color: 'bg-green-100 text-green-600 border-green-200' };
-    case 'dinner':
-      return { icon: Utensils, color: 'bg-blue-100 text-blue-600 border-blue-200' };
-    case 'snack':
-      return { icon: Zap, color: 'bg-purple-100 text-purple-600 border-purple-200' };
-    case 'water':
-      return { icon: Droplets, color: 'bg-cyan-100 text-cyan-600 border-cyan-200' };
-    case 'exercise':
-      return { icon: Zap, color: 'bg-red-100 text-red-600 border-red-200' };
-    case 'sleep':
-      return { icon: Clock, color: 'bg-indigo-100 text-indigo-600 border-indigo-200' };
-    default:
-      return { icon: Clock, color: 'bg-gray-100 text-gray-600 border-gray-200' };
-  }
-};
 
 export const TimelineEntry: React.FC<TimelineEntryProps> = ({
   time,
@@ -46,7 +23,7 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = ({
   waterIntake = 0,
   onClick
 }) => {
-  const { icon: Icon, color } = getIconAndColor(type);
+  const { icon: Icon, iconClasses, containerClasses } = getEntryStyle(type);
 
   return (
     <motion.div 
@@ -60,12 +37,12 @@ export const TimelineEntry: React.FC<TimelineEntryProps> = ({
       <div className="absolute left-6 top-12 w-px h-full bg-gray-200 -z-10" />
       
       {/* Icon */}
-      <motion.div 
-        className={`w-12 h-12 rounded-full flex items-center justify-center border-2 ${color} z-10`}
+      <motion.div
+        className={`${containerClasses} z-10`}
         whileHover={{ scale: 1.1 }}
         transition={{ duration: 0.2 }}
       >
-        <Icon className="w-5 h-5" />
+        <Icon className={iconClasses} />
       </motion.div>
 
       {/* Content */}

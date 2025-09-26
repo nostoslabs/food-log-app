@@ -1,9 +1,11 @@
+import { AnimatePresence,motion } from 'framer-motion';
+import { Activity, AlertCircle, Calendar, CheckCircle, ChevronLeft, ChevronRight, Cookie, Loader2, Moon, Plus, Utensils } from 'lucide-react';
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Utensils, Cookie, Loader2, CheckCircle, AlertCircle, ChevronLeft, ChevronRight, Calendar, Activity, Moon, Coffee, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useFoodLog, useDateNavigation } from '../hooks';
-import { QuickMealEntry, QuickSnackEntry, QuickHealthMetricsEntry, QuickSleepEntry } from '../components';
+
+import { QuickHealthMetricsEntry, QuickMealEntry, QuickSleepEntry,QuickSnackEntry } from '../components';
+import { getCompactEntryStyle } from '../config/entryStyles';
+import { useDateNavigation,useFoodLog } from '../hooks';
 import type { MealData, SnackData } from '../types';
 
 const LogPage: React.FC = () => {
@@ -46,12 +48,12 @@ const LogPage: React.FC = () => {
     }
   };
 
-  const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string }) => {
+  const handleHealthMetricsSave = async (healthData: { bowelMovements: string; exercise: string; dailyWaterIntake: string }) => {
     try {
       // Update each health metric field
-      Object.entries(healthData).forEach(([field, value]) => {
-        updateHealthMetric(field as 'bowelMovements' | 'exercise', value);
-      });
+      updateHealthMetric('bowelMovements', healthData.bowelMovements);
+      updateHealthMetric('exercise', healthData.exercise);
+      updateHealthMetric('dailyWaterIntake', healthData.dailyWaterIntake);
       setSaveSuccess('Health metrics saved successfully!');
       setTimeout(() => setSaveSuccess(null), 3000);
     } catch (error) {
@@ -72,49 +74,43 @@ const LogPage: React.FC = () => {
   };
 
   const mealButtons = [
-    { 
-      key: 'breakfast', 
-      label: 'Breakfast', 
-      icon: Coffee, 
-      color: 'from-amber-400 to-orange-500',
+    {
+      key: 'breakfast' as const,
+      label: 'Breakfast',
+      type: 'breakfast' as const,
       data: foodLog.breakfast
     },
-    { 
-      key: 'lunch', 
-      label: 'Lunch', 
-      icon: Utensils, 
-      color: 'from-green-500 to-emerald-500',
+    {
+      key: 'lunch' as const,
+      label: 'Lunch',
+      type: 'lunch' as const,
       data: foodLog.lunch
     },
-    { 
-      key: 'dinner', 
-      label: 'Dinner', 
-      icon: Utensils, 
-      color: 'from-indigo-500 to-purple-500',
+    {
+      key: 'dinner' as const,
+      label: 'Dinner',
+      type: 'dinner' as const,
       data: foodLog.dinner
     }
   ];
 
   const snackButtons = [
-    { 
-      key: 'midMorningSnack', 
-      label: 'Mid-Morning', 
-      icon: Zap, 
-      color: 'from-green-400 to-teal-500',
+    {
+      key: 'midMorningSnack' as const,
+      label: 'Mid-Morning',
+      type: 'snack' as const,
       data: foodLog.midMorningSnack
     },
-    { 
-      key: 'midDaySnack', 
-      label: 'Afternoon', 
-      icon: Zap, 
-      color: 'from-blue-400 to-indigo-500',
+    {
+      key: 'midDaySnack' as const,
+      label: 'Afternoon',
+      type: 'snack' as const,
       data: foodLog.midDaySnack
     },
-    { 
-      key: 'nighttimeSnack', 
-      label: 'Evening', 
-      icon: Zap, 
-      color: 'from-purple-400 to-pink-500',
+    {
+      key: 'nighttimeSnack' as const,
+      label: 'Evening',
+      type: 'snack' as const,
       data: foodLog.nighttimeSnack
     }
   ];
@@ -125,7 +121,7 @@ const LogPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center pb-20">
+      <div className="h-screen bg-background flex items-center justify-center pb-24 overflow-hidden">
         <div className="flex items-center gap-3 text-muted-foreground">
           <Loader2 className="w-6 h-6 animate-spin text-brand-orange" />
           <span className="text-lg font-medium">Loading your log...</span>
@@ -135,19 +131,19 @@ const LogPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-20">
+    <div className="flex flex-col h-screen bg-background pb-24 overflow-hidden">
       {/* Header */}
       <motion.div 
-        className="bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+        className="bg-gradient-to-r from-brand-orange to-red-500 text-white shadow-lg sticky top-0 z-10"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="px-4 py-6">
+        <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Plus className="w-6 h-6" />
-              <h1 className="text-xl font-bold">Log</h1>
+              <h1 className="text-lg font-bold">Log</h1>
             </div>
             <Link 
               to="/legacy"
@@ -205,7 +201,7 @@ const LogPage: React.FC = () => {
       <AnimatePresence>
         {saveSuccess && (
           <motion.div
-            className="mx-4 mt-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2"
+            className="mx-4 mt-2 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -219,7 +215,7 @@ const LogPage: React.FC = () => {
       {/* Error Message */}
       {error && (
         <motion.div
-          className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2"
+          className="mx-4 mt-2 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -228,32 +224,35 @@ const LogPage: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Meals Section */}
-      <motion.div 
-        className="m-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <Utensils className="w-5 h-5" />
-          Meals
-        </h2>
-        <div className="space-y-3">
-          {mealButtons.map((meal, index) => (
-            <motion.button
-              key={meal.key}
-              onClick={() => setActiveModal(meal.key)}
-              className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 + index * 0.05 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${meal.color} flex items-center justify-center shadow-lg`}>
-                <meal.icon className="w-7 h-7 text-white" />
-              </div>
+      {/* Main Content - Scrollable */}
+      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
+        {/* Meals Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h2 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+            <Utensils className="w-4 h-4" />
+            Meals
+          </h2>
+          <div className="space-y-2">
+          {mealButtons.map((meal, index) => {
+            const { icon: MealIcon, iconClasses, containerClasses } = getCompactEntryStyle(meal.type);
+            return (
+              <motion.button
+                key={meal.key}
+                onClick={() => setActiveModal(meal.key)}
+                className="w-full bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex items-center gap-3 hover:shadow-md transition-all"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + index * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className={containerClasses}>
+                  <MealIcon className={iconClasses} />
+                </div>
               <div className="flex-1 text-left">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-gray-900">{meal.label}</h3>
@@ -261,42 +260,44 @@ const LogPage: React.FC = () => {
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   )}
                 </div>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs text-gray-500">
                   {hasContent(meal.data) ? 'Logged - tap to edit' : `Add ${meal.label.toLowerCase()} items`}
                 </p>
-              </div>
-              <Plus className="w-5 h-5 text-gray-400" />
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
+                </div>
+                <Plus className="w-5 h-5 text-gray-400" />
+              </motion.button>
+            );
+          })}
+          </div>
+        </motion.div>
 
-      {/* Snacks Section */}
-      <motion.div 
-        className="m-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <Cookie className="w-5 h-5" />
-          Snacks
-        </h2>
-        <div className="grid grid-cols-1 gap-3">
-          {snackButtons.map((snack, index) => (
-            <motion.button
-              key={snack.key}
-              onClick={() => setActiveModal(snack.key)}
-              className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 + index * 0.05 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${snack.color} flex items-center justify-center shadow-lg`}>
-                <snack.icon className="w-5 h-5 text-white" />
-              </div>
+        {/* Snacks Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+            <Cookie className="w-4 h-4" />
+            Snacks
+          </h2>
+          <div className="grid grid-cols-1 gap-2">
+          {snackButtons.map((snack, index) => {
+            const { icon: SnackIcon, iconClasses, containerClasses } = getCompactEntryStyle(snack.type);
+            return (
+              <motion.button
+                key={snack.key}
+                onClick={() => setActiveModal(snack.key)}
+                className="bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex items-center gap-3 hover:shadow-md transition-all"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + index * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className={containerClasses}>
+                  <SnackIcon className={iconClasses} />
+                </div>
               <div className="flex-1 text-left">
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium text-gray-900">{snack.label} Snack</h3>
@@ -307,36 +308,41 @@ const LogPage: React.FC = () => {
                 <p className="text-xs text-gray-500">
                   {hasContent(snack.data) ? 'Logged - tap to edit' : 'Add snack details'}
                 </p>
-              </div>
-              <Plus className="w-4 h-4 text-gray-400" />
-            </motion.button>
-          ))}
-        </div>
-      </motion.div>
+                </div>
+                <Plus className="w-4 h-4 text-gray-400" />
+              </motion.button>
+            );
+          })}
+          </div>
+        </motion.div>
 
-      {/* Health Metrics Section */}
-      <motion.div 
-        className="m-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <Activity className="w-5 h-5" />
-          Health Metrics
-        </h2>
-        <motion.button
-          onClick={() => setActiveModal('healthMetrics')}
-          className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all"
+        {/* Health Metrics Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h2 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+            <Activity className="w-4 h-4" />
+            Health Metrics
+          </h2>
+          <motion.button
+            onClick={() => setActiveModal('healthMetrics')}
+            className="w-full bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex items-center gap-3 hover:shadow-md transition-all"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center shadow-lg">
-            <Activity className="w-7 h-7 text-white" />
-          </div>
+            {(() => {
+              const { icon: HealthIcon, iconClasses, containerClasses } = getCompactEntryStyle('health');
+              return (
+                <div className={containerClasses}>
+                  <HealthIcon className={iconClasses} />
+                </div>
+              );
+            })()}
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-gray-900">Health Tracking</h3>
@@ -344,39 +350,43 @@ const LogPage: React.FC = () => {
                 <CheckCircle className="w-4 h-4 text-green-500" />
               )}
             </div>
-            <p className="text-sm text-gray-500">
-              {(foodLog.bowelMovements || foodLog.exercise) 
-                ? 'Logged - tap to edit' 
-                : 'Add bowel movements, exercise'}
-            </p>
+              <p className="text-xs text-gray-500">
+                {(foodLog.bowelMovements || foodLog.exercise)
+                  ? 'Logged - tap to edit'
+                  : 'Add bowel movements, exercise'}
+              </p>
           </div>
           <Plus className="w-5 h-5 text-gray-400" />
-        </motion.button>
-      </motion.div>
+          </motion.button>
+        </motion.div>
 
-      {/* Sleep Section */}
-      <motion.div 
-        className="m-4"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <h2 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <Moon className="w-5 h-5" />
-          Sleep
-        </h2>
-        <motion.button
-          onClick={() => setActiveModal('sleep')}
-          className="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all"
+        {/* Sleep Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <h2 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+            <Moon className="w-4 h-4" />
+            Sleep
+          </h2>
+          <motion.button
+            onClick={() => setActiveModal('sleep')}
+            className="w-full bg-white rounded-lg p-3 shadow-sm border border-gray-100 flex items-center gap-3 hover:shadow-md transition-all"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center shadow-lg">
-            <Moon className="w-7 h-7 text-white" />
-          </div>
+            {(() => {
+              const { icon: SleepIcon, iconClasses, containerClasses } = getCompactEntryStyle('sleep');
+              return (
+                <div className={containerClasses}>
+                  <SleepIcon className={iconClasses} />
+                </div>
+              );
+            })()}
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-gray-900">Sleep Tracking</h3>
@@ -384,15 +394,16 @@ const LogPage: React.FC = () => {
                 <CheckCircle className="w-4 h-4 text-green-500" />
               )}
             </div>
-            <p className="text-sm text-gray-500">
-              {(foodLog.sleepQuality > 0 || foodLog.sleepHours)
-                ? 'Logged - tap to edit'
-                : 'Add sleep quality and hours'}
-            </p>
+              <p className="text-xs text-gray-500">
+                {(foodLog.sleepQuality > 0 || foodLog.sleepHours)
+                  ? 'Logged - tap to edit'
+                  : 'Add sleep quality and hours'}
+              </p>
           </div>
           <Plus className="w-5 h-5 text-gray-400" />
-        </motion.button>
-      </motion.div>
+          </motion.button>
+        </motion.div>
+      </div>
 
       {/* Modals */}
       <AnimatePresence>
@@ -421,7 +432,8 @@ const LogPage: React.FC = () => {
           <QuickHealthMetricsEntry
             initialData={{
               bowelMovements: foodLog.bowelMovements || '',
-              exercise: foodLog.exercise || ''
+              exercise: foodLog.exercise || '',
+              dailyWaterIntake: foodLog.dailyWaterIntake || ''
             }}
             onSave={handleHealthMetricsSave}
             onClose={() => setActiveModal(null)}
